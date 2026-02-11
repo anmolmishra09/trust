@@ -1,0 +1,50 @@
+# robots.txt for Trusted Escort
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow login and admin pages from indexing
+Disallow: /signin
+Disallow: /admin/
+Disallow: /api/
+
+# Allow location pages
+Allow: /location/*
+
+# Allow escorts pages
+Allow: /escorts
+
+# Sitemap location
+Sitemap: https://www.trustedescort.com/sitemap.xml
+
+# Crawl-delay for all bots
+Crawl-delay: 1
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Specific rules for Yandex
+User-agent: Yandex
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SEMrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
