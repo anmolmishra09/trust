@@ -1064,9 +1064,9 @@ function Location() {
         </div>
       </section>
 
-      {/* Frequently Asked Questions Section */}
+      {/* Frequently Asked Questions Section - 6 Left, 6 Right */}
       <section className="py-20 bg-dark-bg border-t border-gold/10">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1086,53 +1086,105 @@ function Location() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="space-y-3"
+            className="grid md:grid-cols-2 gap-6"
           >
-            {cityFAQs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="border border-gold/20 rounded-lg overflow-hidden bg-dark-card/50 backdrop-blur-sm"
-              >
-                <button
-                  onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-5 flex justify-between items-center text-left hover:bg-gold/5 transition-colors"
-                  aria-expanded={openFAQ === index}
-                  aria-controls={`faq-answer-${index}`}
-                  type="button"
+            {/* Left Column - First 6 FAQs */}
+            <div className="space-y-3">
+              {cityFAQs.slice(0, 6).map((faq, index) => (
+                <motion.div
+                  key={`left-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border border-gold/20 rounded-lg overflow-hidden bg-dark-card/50 backdrop-blur-sm"
                 >
-                  <span className="text-white font-semibold text-lg pr-4">{faq.question}</span>
-                  <motion.svg
-                    animate={{ rotate: openFAQ === index ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-6 h-6 text-gold flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full px-6 py-5 flex justify-between items-center text-left hover:bg-gold/5 transition-colors"
+                    aria-expanded={openFAQ === index}
+                    aria-controls={`faq-answer-${index}`}
+                    type="button"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </motion.svg>
-                </button>
-                <AnimatePresence>
-                  {openFAQ === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                    <span className="text-white font-semibold text-lg pr-4">{faq.question}</span>
+                    <motion.svg
+                      animate={{ rotate: openFAQ === index ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
+                      className="w-6 h-6 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <div id={`faq-answer-${index}`} className="px-6 pb-5 pt-2 text-gray-300 leading-relaxed border-t border-gold/10">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQ === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div id={`faq-answer-${index}`} className="px-6 pb-5 pt-2 text-gray-300 leading-relaxed border-t border-gold/10">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Right Column - Last 6 FAQs */}
+            <div className="space-y-3">
+              {cityFAQs.slice(6, 12).map((faq, index) => (
+                <motion.div
+                  key={`right-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (index + 6) * 0.05 }}
+                  className="border border-gold/20 rounded-lg overflow-hidden bg-dark-card/50 backdrop-blur-sm"
+                >
+                  <button
+                    onClick={() => toggleFAQ(index + 6)}
+                    className="w-full px-6 py-5 flex justify-between items-center text-left hover:bg-gold/5 transition-colors"
+                    aria-expanded={openFAQ === (index + 6)}
+                    aria-controls={`faq-answer-${index + 6}`}
+                    type="button"
+                  >
+                    <span className="text-white font-semibold text-lg pr-4">{faq.question}</span>
+                    <motion.svg
+                      animate={{ rotate: openFAQ === (index + 6) ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-6 h-6 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQ === (index + 6) && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div id={`faq-answer-${index + 6}`} className="px-6 pb-5 pt-2 text-gray-300 leading-relaxed border-t border-gold/10">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
           <motion.div

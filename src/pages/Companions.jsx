@@ -19,6 +19,113 @@ function Escorts() {
       setLocationFilter(locationParam)
     }
   }, [searchParams])
+
+  // Location-based FAQ function
+  const getLocationFAQs = (location) => {
+    if (location === 'all') {
+      return [
+        {
+          question: 'What is Trusted Escort?',
+          answer: 'Trusted Escort is a premium escortship service connecting distinguished clients with sophisticated, verified escorts across major cities in India. We provide discreet, professional services for social events, business functions, travel, and personal occasions.',
+        },
+        {
+          question: 'How do I book a companion?',
+          answer: 'Browse our escorts page, select your preferred companion, and contact us via WhatsApp or our booking page. Our team will assist you with availability, rates, and special requests to ensure a seamless experience.',
+        },
+        {
+          question: 'Are all escorts verified?',
+          answer: 'Yes, all our escorts undergo a thorough verification process. Verified escorts are marked with a ✓ badge on their profiles, ensuring authenticity, professionalism, and quality of service.',
+        },
+        {
+          question: 'What are the payment methods?',
+          answer: 'We accept various payment methods including bank transfers, digital payments (UPI, Paytm, Google Pay), and cash. Payment terms and methods will be discussed during booking confirmation.',
+        },
+        {
+          question: 'Can I cancel or reschedule a booking?',
+          answer: 'Yes, cancellations and rescheduling are possible. Please notify us at least 24 hours in advance. Cancellation policies vary based on booking type and timing.',
+        },
+        {
+          question: 'How is my privacy protected?',
+          answer: 'We maintain absolute discretion. All client information is confidential and encrypted. We never share personal details with third parties. Our escorts are also bound by strict confidentiality agreements.',
+        },
+        {
+          question: 'What services are offered?',
+          answer: 'Our escorts provide social escortship services including dinner dates, corporate events, travel escortship, cultural events, shopping, entertainment, and more. Specific services are listed on each profile.',
+        },
+        {
+          question: 'Are there minimum booking durations?',
+          answer: 'Yes, minimum booking durations vary by service type. Typically, hourly bookings have a 2-hour minimum. Specific requirements are listed on each companion\'s profile.',
+        },
+        {
+          question: 'Is communication secure?',
+          answer: 'Yes, all communications through our platform are secure. We recommend using WhatsApp for booking inquiries as it offers end-to-end encryption.',
+        },
+        {
+          question: 'What is the age requirement?',
+          answer: 'You must be 18 years or older to use our services. Age verification is mandatory. All our escorts are also 18+ and verified.',
+        },
+        {
+          question: 'How do I contact customer support?',
+          answer: 'Our support team is available 24/7 via WhatsApp, phone, or through our contact form. We respond within minutes to ensure your needs are met promptly.',
+        },
+        {
+          question: 'What cities do you serve?',
+          answer: 'We currently operate in 69 major Indian cities including Mumbai, Delhi, Bangalore, Hyderabad, Pune, Goa, Chennai, Kolkata, and many more.',
+        },
+      ]
+    }
+
+    return [
+      {
+        question: `What areas of ${location} do you serve?`,
+        answer: `We provide escort services throughout ${location} and surrounding areas. Our companions can meet you at hotels, restaurants, events, or your preferred location within the city.`,
+      },
+      {
+        question: `How many escorts are available in ${location}?`,
+        answer: `We have a diverse selection of verified escorts in ${location}. Browse our ${location} escorts page to see all available companions with detailed profiles, photos, and rates.`,
+      },
+      {
+        question: `What are the rates for escorts in ${location}?`,
+        answer: `Rates vary based on the companion's experience, duration, and services. ${location} escorts typically charge ₹5,000-₹25,000+ per hour. View individual profiles for specific rates and package deals.`,
+      },
+      {
+        question: `How quickly can I book an escort in ${location}?`,
+        answer: `We offer same-day bookings in ${location} based on availability. For popular times or specific companions, we recommend booking 24-48 hours in advance to ensure availability.`,
+      },
+      {
+        question: `Are ${location} escorts available for outcall services?`,
+        answer: `Yes, most ${location} escorts offer both incall and outcall services. Outcall means the companion visits your hotel or residence. Additional travel charges may apply for distant locations.`,
+      },
+      {
+        question: `Can I book an escort for travel from ${location}?`,
+        answer: `Absolutely! Many ${location} escorts are available for domestic and international travel. Discuss travel arrangements, duration, and rates with our team during booking.`,
+      },
+      {
+        question: `What hotels in ${location} are escort-friendly?`,
+        answer: `Most 4-star and 5-star hotels in ${location} are suitable for escort meetings. We can recommend discreet, professional venues. Always book under your name and inform reception of expecting a guest.`,
+      },
+      {
+        question: `Are ${location} escorts available for dinner dates?`,
+        answer: `Yes! Dinner dates are very popular in ${location}. Our companions are well-educated, well-dressed, and perfect for upscale restaurants, business dinners, or social events.`,
+      },
+      {
+        question: `How do I verify an escort's identity in ${location}?`,
+        answer: `All ${location} escorts on our platform are verified with badge indicators on profiles. We verify ID, photos, and conduct background checks to ensure safety and authenticity.`,
+      },
+      {
+        question: `What languages do ${location} escorts speak?`,
+        answer: `${location} escorts typically speak English, Hindi, and local regional languages. Many are multilingual. Check individual profiles for language preferences and communication details.`,
+      },
+      {
+        question: `Can I request specific characteristics in ${location}?`,
+        answer: `Yes! Use our advanced filters to search by age, height, ethnicity, services offered, and more. Our ${location} escorts have diverse profiles to match your preferences.`,
+      },
+      {
+        question: `Is there 24/7 support for bookings in ${location}?`,
+        answer: `Yes, our customer support team is available 24/7 for ${location} bookings via WhatsApp and phone. We handle bookings, inquiries, and assistance at any time.`,
+      },
+    ]
+  }
   
   // Load all escorts including advertiser profiles
   useEffect(() => {
@@ -1464,6 +1571,154 @@ function Escorts() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Location-Based FAQs Section - 6 Left, 6 Right */}
+      <section className="py-16 bg-dark-card/30 border-y border-gold/10">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-serif font-bold text-gold mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-gray-300">
+              {locationFilter !== 'all' 
+                ? `Common questions about our escort services in ${locationFilter}`
+                : 'Common questions about our escort services'
+              }
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="grid md:grid-cols-2 gap-6"
+          >
+            {/* Left Column - First 6 FAQs */}
+            <div className="space-y-3">
+              {getLocationFAQs(locationFilter).slice(0, 6).map((faq, index) => (
+                <motion.div
+                  key={`left-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border border-gold/20 rounded-lg overflow-hidden bg-dark-card/50"
+                >
+                  <button
+                    onClick={() => setOpenFAQIndex(openFAQIndex === index ? null : index)}
+                    className="w-full px-6 py-4 flex justify-between items-center text-left hover:bg-gold/5 transition-colors"
+                    aria-expanded={openFAQIndex === index}
+                    aria-controls={`faq-answer-${index}`}
+                    type="button"
+                  >
+                    <span className="text-white font-semibold pr-4">{faq.question}</span>
+                    <motion.svg
+                      animate={{ rotate: openFAQIndex === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-5 h-5 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div id={`faq-answer-${index}`} className="px-6 pb-4 pt-2 text-gray-400 leading-relaxed border-t border-gold/10">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Right Column - Last 6 FAQs */}
+            <div className="space-y-3">
+              {getLocationFAQs(locationFilter).slice(6, 12).map((faq, index) => (
+                <motion.div
+                  key={`right-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (index + 6) * 0.05 }}
+                  className="border border-gold/20 rounded-lg overflow-hidden bg-dark-card/50"
+                >
+                  <button
+                    onClick={() => setOpenFAQIndex(openFAQIndex === (index + 6) ? null : (index + 6))}
+                    className="w-full px-6 py-4 flex justify-between items-center text-left hover:bg-gold/5 transition-colors"
+                    aria-expanded={openFAQIndex === (index + 6)}
+                    aria-controls={`faq-answer-${index + 6}`}
+                    type="button"
+                  >
+                    <span className="text-white font-semibold pr-4">{faq.question}</span>
+                    <motion.svg
+                      animate={{ rotate: openFAQIndex === (index + 6) ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-5 h-5 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQIndex === (index + 6) && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div id={`faq-answer-${index + 6}`} className="px-6 pb-4 pt-2 text-gray-400 leading-relaxed border-t border-gold/10">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+            className="text-center mt-10"
+          >
+            <p className="text-gray-400 mb-4">Have more questions?</p>
+            <Link to="/faq" aria-label="View all frequently asked questions about our escort services">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-gold"
+                type="button"
+              >
+                View All FAQs
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 

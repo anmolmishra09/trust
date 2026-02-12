@@ -100,13 +100,13 @@ function Navbar() {
           <Link to="/">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center cursor-pointer"
             >
-              <div className="text-2xl font-serif font-bold text-gold">TE</div>
-              <div className="hidden sm:block">
-                <div className="text-sm font-serif text-gold">Trusted</div>
-                <div className="text-xs font-sans text-gold/70">Escort</div>
-              </div>
+              <img 
+                src="/images/logo.png" 
+                alt="Trusted Escort" 
+                className="h-14 w-auto object-contain"
+              />
             </motion.div>
           </Link>
 

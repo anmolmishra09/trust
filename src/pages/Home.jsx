@@ -527,7 +527,11 @@ function Home() {
 
               return (
                 <motion.div key={companion.id} variants={itemVariants}>
-                  <Link to={`/companion/${companion.id}`} target="_blank" rel="noopener noreferrer">
+                  <Link 
+                    to={companion.id === 1 || companion.id === 2 || companion.id === 3 ? `/escorts?location=${companion.location}` : `/companion/${companion.id}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
                     <motion.div
                       whileHover={{ y: -10 }}
                       className="card-glass overflow-hidden group cursor-pointer"
