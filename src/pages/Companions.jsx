@@ -992,6 +992,20 @@ function Escorts() {
     }
     
     loadAllEscorts()
+    
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      console.log('Profiles updated, reloading all escorts')
+      loadAllEscorts()
+    }
+    
+    window.addEventListener('profilesUpdated', handleProfileUpdate)
+    window.addEventListener('focus', loadAllEscorts)
+    
+    return () => {
+      window.removeEventListener('profilesUpdated', handleProfileUpdate)
+      window.removeEventListener('focus', loadAllEscorts)
+    }
   }, [])
 
   // Handle ESC key to close lightbox

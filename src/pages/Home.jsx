@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getAllProfiles } from '../services/profileService'
 
 function Home() {
   const navigate = useNavigate()
@@ -15,10 +14,8 @@ function Home() {
   // Load featured escorts on component mount
   useEffect(() => {
     const loadFeaturedEscorts = () => {
-      // Get advertiser profiles from localStorage
-      const advertiserProfiles = getAllProfiles()
-      
-      // Default featured escorts (hardcoded fallback)
+      // Only show default featured escorts on home page
+      // Advertiser profiles will only appear on location pages
       const defaultEscorts = [
         {
           id: 1,
@@ -58,20 +55,32 @@ function Home() {
         },
       ]
       
-      // Combine advertiser profiles with default escorts (show up to 3 most recent)
-      const combinedEscorts = [...advertiserProfiles.slice(-3).reverse(), ...defaultEscorts].slice(0, 3)
-      
-      setFeaturedEscorts(combinedEscorts)
+      // Only use default escorts for home page featured section
+      setFeaturedEscorts(defaultEscorts)
       
       // Initialize image indices for all escorts
       const indices = {}
-      combinedEscorts.forEach(escort => {
+      defaultEscorts.forEach(escort => {
         indices[escort.id] = 0
       })
       setImageIndices(indices)
     }
     
     loadFeaturedEscorts()
+    
+    // Listen for profile updates (though they won't affect home page)
+    const handleProfileUpdate = () => {
+      // No need to reload on home page since we only show default escorts
+      console.log('Profile updated, but home page only shows default escorts')
+    }
+    
+    window.addEventListener('profilesUpdated', handleProfileUpdate)
+    window.addEventListener('focus', loadFeaturedEscorts)
+    
+    return () => {
+      window.removeEventListener('profilesUpdated', handleProfileUpdate)
+      window.removeEventListener('focus', loadFeaturedEscorts)
+    }
   }, [])
 
   // Handle ESC key to close lightbox
@@ -896,13 +905,14 @@ function Home() {
                   <motion.div
                     whileHover={{ y: -5, scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="card-glass p-4 text-center cursor-pointer group relative"
+                    className="card-glass p-4 text-center cursor-pointer group relative overflow-hidden"
                   >
-                    <div className="text-2xl mb-2">📍</div>
-                    <h3 className="text-sm font-semibold text-white group-hover:text-gold transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-dark/95 via-dark-card/90 to-dark/95 group-hover:from-dark-card/80 group-hover:via-gold/10 group-hover:to-dark-card/80 transition-all"></div>
+                    <div className="relative z-10 text-2xl mb-2">📍</div>
+                    <h3 className="relative z-10 text-sm font-semibold text-white group-hover:text-gold transition-colors">
                       {city}
                     </h3>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                    <div className="relative z-10 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
                       <span className="text-xs text-gold">View Escorts →</span>
                     </div>
                   </motion.div>

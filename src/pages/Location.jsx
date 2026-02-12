@@ -767,6 +767,18 @@ function Location() {
     }
 
     loadFeaturedEscorts()
+    
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      console.log('Profiles updated, reloading location escorts')
+      loadFeaturedEscorts()
+    }
+    
+    window.addEventListener('profilesUpdated', handleProfileUpdate)
+    
+    return () => {
+      window.removeEventListener('profilesUpdated', handleProfileUpdate)
+    }
   }, [currentCity.name])
 
   const toggleFAQ = (index) => {

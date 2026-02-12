@@ -309,40 +309,55 @@ function AdvertiserSignup() {
               <p className="text-xl text-gray-400">
                 For free today! Create your profile and start connecting with clients
               </p>
-              {/* Debug: Show current step */}
-              <div className="mt-4 text-sm text-gray-500">
-                Current Step: {step} / 3
-              </div>
             </motion.div>
 
             {/* Progress Steps */}
-            <motion.div variants={itemVariants} className="flex justify-between mb-8">
+            <motion.div variants={itemVariants} className="flex items-center justify-center mb-8 max-w-md mx-auto">
               {[1, 2, 3].map((s) => (
-                <div key={s} className="flex-1 flex items-center">
+                <React.Fragment key={s}>
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
                       s === step
-                        ? 'bg-gold text-dark-bg'
+                        ? 'bg-gold text-dark-bg shadow-lg shadow-gold/50'
                         : s < step
                         ? 'bg-gold/50 text-gold'
-                        : 'bg-dark-bg border border-gold/30 text-gray-400'
+                        : 'bg-dark-bg border-2 border-gold/30 text-gray-400'
                     }`}
                   >
                     {s < step ? '✓' : s}
                   </motion.div>
                   {s < 3 && (
                     <div
-                      className={`flex-1 h-1 mx-2 transition ${
+                      className={`w-16 md:w-24 h-1 mx-2 transition-all ${
                         s < step ? 'bg-gold' : 'bg-gold/20'
                       }`}
                     />
                   )}
-                </div>
+                </React.Fragment>
               ))}
             </motion.div>
-
-            {/* Debug: Current Step = {step} */}
+            
+            {/* Step Labels */}
+            <motion.div variants={itemVariants} className="flex items-center justify-center mb-8 max-w-md mx-auto">
+              <div className="flex-1 text-center">
+                <p className={`text-xs font-medium ${step === 1 ? 'text-gold' : 'text-gray-500'}`}>
+                  Account
+                </p>
+              </div>
+              <div className="w-16 md:w-24 mx-2"></div>
+              <div className="flex-1 text-center">
+                <p className={`text-xs font-medium ${step === 2 ? 'text-gold' : 'text-gray-500'}`}>
+                  Profile
+                </p>
+              </div>
+              <div className="w-16 md:w-24 mx-2"></div>
+              <div className="flex-1 text-center">
+                <p className={`text-xs font-medium ${step === 3 ? 'text-gold' : 'text-gray-500'}`}>
+                  Services
+                </p>
+              </div>
+            </motion.div>
             
             {/* Validation Errors Display */}
             {Object.keys(errors).length > 0 && (

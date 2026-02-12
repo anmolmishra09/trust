@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { getCurrentUser, logoutUser } from '../services/profileService'
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +19,61 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = () => {
+      const user = getCurrentUser()
+      setCurrentUser(user)
+    }
+
+    checkAuth()
+
+    // Listen for authentication changes
+    const handleAuthChange = (event) => {
+      setCurrentUser(event.detail.user)
+    }
+
+    const handleStorageChange = (event) => {
+      if (event.key === 'currentUser') {
+        checkAuth()
+      }
+    }
+
+    window.addEventListener('authChanged', handleAuthChange)
+    window.addEventListener('focus', checkAuth)
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('authChanged', handleAuthChange)
+      window.removeEventListener('focus', checkAuth)
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [])
+
+  // Close user menu when clicking outside or changing route
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.user-menu-container')) {
+        setShowUserMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showUserMenu])
+
+  useEffect(() => {
+    setShowUserMenu(false)
+    setIsOpen(false)
+  }, [location.pathname])
+
+  const handleLogout = () => {
+    logoutUser()
+    setShowUserMenu(false)
+    setIsOpen(false)
+    navigate('/')
+  }
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -69,15 +128,52 @@ function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Link to="/signin">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition"
-              >
-                Sign In
-              </motion.button>
-            </Link>
+            {currentUser ? (
+              <div className="relative user-menu-container">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition"
+                >
+                  <span>👤</span>
+                  <span>{currentUser.businessName || currentUser.email}</span>
+                  <span className="text-xs">▼</span>
+                </motion.button>
+                <AnimatePresence>
+                  {showUserMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-dark-card border border-gold/20 rounded-lg shadow-lg overflow-hidden z-50"
+                    >
+                      <Link to="/advertiser-dashboard" onClick={() => setShowUserMenu(false)}>
+                        <div className="px-4 py-3 hover:bg-dark-hover text-gray-300 hover:text-gold transition text-sm">
+                          📊 Dashboard
+                        </div>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 hover:bg-dark-hover text-gray-300 hover:text-red-400 transition text-sm border-t border-gold/10"
+                      >
+                        🚪 Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link to="/signin">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition"
+                >
+                  Sign In
+                </motion.button>
+              </Link>
+            )}
             <Link to="/booking">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -138,14 +234,34 @@ function Navbar() {
                 </motion.div>
               </Link>
             ))}
-            <Link to="/signin" onClick={() => setIsOpen(false)}>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                className="w-full px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition font-sans"
-              >
-                Sign In
-              </motion.button>
-            </Link>
+            {currentUser ? (
+              <>
+                <Link to="/advertiser-dashboard" onClick={() => setIsOpen(false)}>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    className="w-full px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition font-sans"
+                  >
+                    📊 Dashboard
+                  </motion.button>
+                </Link>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  onClick={handleLogout}
+                  className="w-full px-4 py-2 text-sm text-red-400 border border-red-400/50 rounded-lg hover:bg-red-400/10 transition font-sans"
+                >
+                  🚪 Logout
+                </motion.button>
+              </>
+            ) : (
+              <Link to="/signin" onClick={() => setIsOpen(false)}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full px-4 py-2 text-sm text-gold border border-gold/50 rounded-lg hover:bg-gold/10 transition font-sans"
+                >
+                  Sign In
+                </motion.button>
+              </Link>
+            )}
             <Link to="/booking" onClick={() => setIsOpen(false)}>
               <motion.button
                 whileHover={{ scale: 1.02 }}

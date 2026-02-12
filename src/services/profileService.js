@@ -38,11 +38,18 @@ export const loginUser = (email, password) => {
   // Store current user (excluding password)
   const { password: _, ...userWithoutPassword } = user
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userWithoutPassword))
+  
+  // Dispatch custom event to notify login
+  window.dispatchEvent(new CustomEvent('authChanged', { detail: { user: userWithoutPassword, isAuthenticated: true } }))
+  
   return userWithoutPassword
 }
 
 export const logoutUser = () => {
   localStorage.removeItem(CURRENT_USER_KEY)
+  
+  // Dispatch custom event to notify logout
+  window.dispatchEvent(new CustomEvent('authChanged', { detail: { user: null, isAuthenticated: false } }))
 }
 
 export const getCurrentUser = () => {
@@ -86,6 +93,10 @@ export const createProfile = (profileData) => {
   }
   
   localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles))
+  
+  // Dispatch custom event to notify profile changes
+  window.dispatchEvent(new CustomEvent('profilesUpdated', { detail: newProfile }))
+  
   return newProfile
 }
 
@@ -114,6 +125,9 @@ export const deleteProfile = (profileId) => {
   const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
   const updatedProfiles = profiles.filter(p => p.id !== profileId)
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
+  
+  // Dispatch custom event to notify profile changes
+  window.dispatchEvent(new CustomEvent('profilesUpdated', { detail: { deleted: profileId } }))
 }
 
 export const deleteUserAccount = () => {
@@ -126,6 +140,9 @@ export const deleteUserAccount = () => {
   const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
   const updatedProfiles = profiles.filter(p => p.userId !== user.id)
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
+  
+  // Dispatch custom event to notify profile changes
+  window.dispatchEvent(new CustomEvent('profilesUpdated', { detail: { deletedUser: user.id } }))
   
   // Delete user account
   const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')

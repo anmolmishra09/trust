@@ -1247,6 +1247,18 @@ function CompanionProfile() {
     }
     
     loadAllEscorts()
+    
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      console.log('Profiles updated, reloading companion profiles')
+      loadAllEscorts()
+    }
+    
+    window.addEventListener('profilesUpdated', handleProfileUpdate)
+    
+    return () => {
+      window.removeEventListener('profilesUpdated', handleProfileUpdate)
+    }
   }, [])
 
   // Find companion by ID
