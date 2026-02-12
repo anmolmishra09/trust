@@ -1360,7 +1360,7 @@ function CompanionProfile() {
             {/* Gallery */}
             <motion.div variants={itemVariants}>
               <motion.div
-                className="card-glass overflow-hidden mb-6 h-96 cursor-pointer"
+                className="card-glass overflow-hidden mb-6 h-96 cursor-pointer bg-dark-card"
                 onClick={() => {
                   setSelectedImage(companion.image)
                   setShowModal(true)
@@ -1369,7 +1369,10 @@ function CompanionProfile() {
                 <motion.img
                   src={companion.image}
                   alt={companion.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'
+                  }}
                   layoutId="profile-image"
                 />
               </motion.div>
@@ -1380,7 +1383,7 @@ function CompanionProfile() {
                   <motion.div
                     key={idx}
                     whileHover={{ scale: 1.05 }}
-                    className="card-glass overflow-hidden h-24 cursor-pointer"
+                    className="card-glass overflow-hidden h-24 cursor-pointer bg-dark-card"
                     onClick={() => {
                       setSelectedImage(image)
                       setShowModal(true)
@@ -1389,7 +1392,10 @@ function CompanionProfile() {
                     <img
                       src={image}
                       alt={`Gallery ${idx + 1}`}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'
+                      }}
                     />
                   </motion.div>
                 ))}

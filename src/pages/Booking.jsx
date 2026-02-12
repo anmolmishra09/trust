@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 function Booking() {
   const [formData, setFormData] = useState({
@@ -10,11 +11,19 @@ function Booking() {
     date: '',
     time: '',
     companion: '',
+    serviceType: '',
+    duration: '',
+    location: '',
+    meetingPlace: '',
+    paymentMethod: '',
     specialRequests: '',
+    agreeToTerms: false,
   })
 
   const [errors, setErrors] = useState({})
   const [showSuccess, setShowSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [estimatedPrice, setEstimatedPrice] = useState(null)
 
   const escorts = [
     { id: 1, name: 'Sakshi', age: 24, location: 'Mumbai', rating: 4.9, reviews: 127, verified: true },
@@ -41,6 +50,47 @@ function Booking() {
     { id: 22, name: 'Seema', age: 26, location: 'Hyderabad', rating: 4.91, reviews: 152, verified: true },
   ]
 
+  const serviceTypes = [
+    { value: 'hourly', label: 'Hourly Service', baseRate: 5000 },
+    { value: 'halfDay', label: 'Half Day (4 hours)', baseRate: 18000 },
+    { value: 'fullDay', label: 'Full Day (8 hours)', baseRate: 35000 },
+    { value: 'overnight', label: 'Overnight (12 hours)', baseRate: 50000 },
+  ]
+
+  const durations = {
+    hourly: ['1 hour', '2 hours', '3 hours'],
+    halfDay: ['4 hours'],
+    fullDay: ['8 hours'],
+    overnight: ['12 hours'],
+  }
+
+  const locations = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa',
+    'Chennai', 'Kolkata', 'Chandigarh', 'Jaipur', 'Indore', 'Ahmedabad',
+    'Surat', 'Lucknow', 'Nagpur', 'Visakhapatnam', 'Bhopal', 'Patna',
+    'Vadodara', 'Agra', 'Nashik', 'Kochi', 'Coimbatore'
+  ]
+
+  const paymentMethods = [
+    { value: 'Cash', label: 'Cash Payment', qrCode: null },
+    { value: 'Bank Transfer', label: 'Bank Transfer', qrCode: null },
+    { value: 'UPI', label: 'UPI Payment', qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=trustedescort@upi&pn=TrustedEscort&cu=INR' },
+    { value: 'Paytm', label: 'Paytm', qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=paytm://pay?pa=9876543210&pn=TrustedEscort' },
+    { value: 'Google Pay', label: 'Google Pay', qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=trustedescort@gpay&pn=TrustedEscort&cu=INR' },
+    { value: 'PhonePe', label: 'PhonePe', qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=trustedescort@ybl&pn=TrustedEscort&cu=INR' },
+  ]
+
+  const calculateEstimatedPrice = (serviceType, duration) => {
+    const service = serviceTypes.find(s => s.value === serviceType)
+    if (!service) return null
+
+    if (serviceType === 'hourly') {
+      const hours = parseInt(duration)
+      return service.baseRate * hours
+    }
+    return service.baseRate
+  }
+
   const validateForm = () => {
     const newErrors = {}
 
@@ -48,23 +98,50 @@ function Booking() {
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       newErrors.email = 'Valid email is required'
     }
-    if (!formData.phone.match(/^\+?[\d\s\-()]+$/)) {
-      newErrors.phone = 'Valid phone number is required'
+    if (!formData.phone.match(/^[0-9]{10}$/)) {
+      newErrors.phone = 'Valid 10-digit phone number is required'
     }
     if (!formData.date) newErrors.date = 'Date is required'
     if (!formData.time) newErrors.time = 'Time is required'
     if (!formData.companion) newErrors.companion = 'Please select a companion'
+    if (!formData.serviceType) newErrors.serviceType = 'Please select service type'
+    if (!formData.duration) newErrors.duration = 'Please select duration'
+    if (!formData.location) newErrors.location = 'Please select location'
+    if (!formData.meetingPlace.trim()) newErrors.meetingPlace = 'Meeting place is required'
+    if (!formData.paymentMethod) newErrors.paymentMethod = 'Please select payment method'
+    if (!formData.agreeToTerms) newErrors.agreeToTerms = 'You must agree to terms & conditions'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    const { name, value, type, checked } = e.target
+    const newValue = type === 'checkbox' ? checked : value
+    
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: newValue,
+      }
+      
+      // Calculate price when service type or duration changes
+      if (name === 'serviceType' || name === 'duration') {
+        const price = calculateEstimatedPrice(
+          name === 'serviceType' ? newValue : updated.serviceType,
+          name === 'duration' ? newValue : updated.duration
+        )
+        setEstimatedPrice(price)
+        
+        // Reset duration if service type changes
+        if (name === 'serviceType') {
+          updated.duration = ''
+        }
+      }
+      
+      return updated
+    })
+    
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -73,24 +150,39 @@ function Booking() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (validateForm()) {
-      // Simulate form submission
-      console.log('Form submitted:', formData)
-      setShowSuccess(true)
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        date: '',
-        time: '',
-        companion: '',
-        specialRequests: '',
-      })
+      setIsLoading(true)
+      
+      // Simulate form submission delay
+      setTimeout(() => {
+        console.log('Form submitted:', formData)
+        setShowSuccess(true)
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          date: '',
+          time: '',
+          companion: '',
+          serviceType: '',
+          duration: '',
+          location: '',
+          meetingPlace: '',
+          paymentMethod: '',
+          specialRequests: '',
+          agreeToTerms: false,
+        })
+        setEstimatedPrice(null)
+        setIsLoading(false)
 
-      // Auto-hide success message after 5 seconds
-      setTimeout(() => setShowSuccess(false), 5000)
+        // Auto-hide success message after 8 seconds
+        setTimeout(() => setShowSuccess(false), 8000)
+      }, 1500)
+    } else {
+      // Scroll to first error
+      window.scrollTo({ top: 300, behavior: 'smooth' })
     }
   }
 
@@ -171,7 +263,7 @@ function Booking() {
 
       {/* Booking Form */}
       <section className="py-20 bg-dark-bg">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="max-w-5xl mx-auto px-4 md:px-6">
           <AnimatePresence>
             {showSuccess && (
               <motion.div
@@ -180,9 +272,9 @@ function Booking() {
                 exit={{ opacity: 0, y: -20 }}
                 className="mb-8 p-6 bg-green-500/20 border border-green-500/50 rounded-xl text-green-300"
               >
-                <h3 className="font-semibold mb-2">✓ Booking Request Submitted!</h3>
+                <h3 className="font-semibold mb-2 text-xl">✓ Booking Request Submitted!</h3>
                 <p className="text-sm">
-                  Thank you for your booking request. We'll contact you shortly to confirm your appointment.
+                  Thank you for your booking request. Our team will contact you within 30 minutes to confirm your appointment via email and WhatsApp.
                 </p>
               </motion.div>
             )}
@@ -195,223 +287,569 @@ function Booking() {
             onSubmit={handleSubmit}
             className="card-glass p-8 md:p-12"
           >
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              {/* Name */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your Full Name"
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.name
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                />
-                <AnimatePresence>
-                  {errors.name && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
-                    >
-                      {errors.name}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+            {/* Personal Information Section */}
+            <motion.div variants={itemVariants} className="mb-10">
+              <h2 className="text-2xl font-serif font-bold text-gold mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Personal Information
+              </h2>
 
-              {/* Email */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@example.com"
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.email
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                />
-                <AnimatePresence>
-                  {errors.email && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
-                    >
-                      {errors.email}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Full Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Your Full Name"
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.name
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.name && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.name}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Phone */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.phone
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                />
-                <AnimatePresence>
-                  {errors.phone && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
-                    >
-                      {errors.phone}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Email Address <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.email
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.email}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Companion */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Select Companion *
-                </label>
-                <select
-                  name="companion"
-                  value={formData.companion}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.companion
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                >
-                  <option value="">-- Please Select --</option>
-                  {escorts.map((comp) => (
-                    <option key={comp.id} value={`${comp.name} - ${comp.age}, ${comp.location}`}>
-                      {comp.verified && '✓ '}{comp.name} - {comp.age}, {comp.location} - ★{comp.rating}
-                    </option>
-                  ))}
-                </select>
-                <AnimatePresence>
-                  {errors.companion && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
-                    >
-                      {errors.companion}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                {/* Phone */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Phone Number (WhatsApp preferred) <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="10-digit mobile number"
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.phone
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.phone && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.phone}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
 
-              {/* Date */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Preferred Date *
-                </label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  min={getTodayDate()}
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.date
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                />
-                <AnimatePresence>
-                  {errors.date && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
-                    >
-                      {errors.date}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+            {/* Booking Details Section */}
+            <motion.div variants={itemVariants} className="mb-10">
+              <h2 className="text-2xl font-serif font-bold text-gold mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Booking Details
+              </h2>
 
-              {/* Time */}
-              <motion.div variants={itemVariants}>
-                <label className="block text-sm font-semibold text-gold mb-3">
-                  Preferred Time *
-                </label>
-                <input
-                  type="time"
-                  name="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-dark-bg border rounded-lg font-sans focus:outline-none transition-colors ${
-                    errors.time
-                      ? 'border-red-500/50 focus:border-red-500/80'
-                      : 'border-gold/20 focus:border-gold/50'
-                  }`}
-                />
-                <AnimatePresence>
-                  {errors.time && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-red-400 text-xs mt-2"
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Companion */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Select Companion <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="companion"
+                    value={formData.companion}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.companion
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  >
+                    <option value="">-- Select a Companion --</option>
+                    {escorts.map((comp) => (
+                      <option key={comp.id} value={`${comp.name} - ${comp.age}, ${comp.location}`}>
+                        {comp.verified && '✓ '}{comp.name} - {comp.age}, {comp.location} - ★{comp.rating} ({comp.reviews} reviews)
+                      </option>
+                    ))}
+                  </select>
+                  <AnimatePresence>
+                    {errors.companion && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.companion}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Service Type */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Service Type <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="serviceType"
+                    value={formData.serviceType}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.serviceType
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  >
+                    <option value="">-- Select Service Type --</option>
+                    {serviceTypes.map((service) => (
+                      <option key={service.value} value={service.value}>
+                        {service.label} - Starting from ₹{service.baseRate.toLocaleString()}
+                      </option>
+                    ))}
+                  </select>
+                  <AnimatePresence>
+                    {errors.serviceType && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.serviceType}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Duration */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Duration <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    disabled={!formData.serviceType}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      errors.duration
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  >
+                    <option value="">-- Select Duration --</option>
+                    {formData.serviceType && durations[formData.serviceType]?.map((dur) => (
+                      <option key={dur} value={dur}>
+                        {dur}
+                      </option>
+                    ))}
+                  </select>
+                  <AnimatePresence>
+                    {errors.duration && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.duration}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Date */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Preferred Date <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    min={getTodayDate()}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.date
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.date && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.date}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Time */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Preferred Time <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.time
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.time && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.time}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Location & Payment Section */}
+            <motion.div variants={itemVariants} className="mb-10">
+              <h2 className="text-2xl font-serif font-bold text-gold mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Location & Payment
+              </h2>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Location/City */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    City <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.location
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  >
+                    <option value="">-- Select City --</option>
+                    {locations.sort().map((loc) => (
+                      <option key={loc} value={loc}>
+                        {loc}
+                      </option>
+                    ))}
+                  </select>
+                  <AnimatePresence>
+                    {errors.location && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.location}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Payment Method */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Preferred Payment Method <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.paymentMethod
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  >
+                    <option value="">-- Select Payment Method --</option>
+                    {paymentMethods.map((method) => (
+                      <option key={method.value} value={method.value}>
+                        {method.label}
+                      </option>
+                    ))}
+                  </select>
+                  <AnimatePresence>
+                    {errors.paymentMethod && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.paymentMethod}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* QR Code Display - Only show if digital payment method is selected */}
+                {formData.paymentMethod && (() => {
+                  const selectedMethod = paymentMethods.find(m => m.value === formData.paymentMethod)
+                  return selectedMethod?.qrCode ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="md:col-span-2"
                     >
-                      {errors.time}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                      <div className="bg-dark-bg border border-gold/30 rounded-lg p-6">
+                        <h3 className="text-lg font-semibold text-gold mb-4 flex items-center gap-2">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                          </svg>
+                          {selectedMethod.label} QR Code
+                        </h3>
+                        <div className="flex flex-col md:flex-row items-center gap-6">
+                          <div className="bg-white p-4 rounded-lg">
+                            <img
+                              src={selectedMethod.qrCode}
+                              alt={`${selectedMethod.label} QR Code`}
+                              className="w-48 h-48"
+                            />
+                          </div>
+                          <div className="flex-1 text-center md:text-left">
+                            <p className="text-gray-300 mb-3">
+                              Scan this QR code to make payment via {selectedMethod.label}
+                            </p>
+                            <div className="space-y-2 text-sm text-gray-400">
+                              <p>• Open your {selectedMethod.label} app</p>
+                              <p>• Scan the QR code</p>
+                              <p>• Enter the amount and complete payment</p>
+                              <p>• Keep the payment confirmation for reference</p>
+                            </div>
+                            <div className="mt-4 p-3 bg-gold/10 border border-gold/30 rounded-lg">
+                              <p className="text-xs text-gold">
+                                ⚠️ Note: Payment details will be confirmed after booking approval
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : null
+                })()}
+
+                {/* Meeting Place */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    Meeting Place / Hotel Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="meetingPlace"
+                    value={formData.meetingPlace}
+                    onChange={handleChange}
+                    placeholder="e.g., Taj Hotel, Bandra West or Your Address"
+                    className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white focus:outline-none transition-colors ${
+                      errors.meetingPlace
+                        ? 'border-red-500/50 focus:border-red-500/80'
+                        : 'border-gold/20 focus:border-gold/50'
+                    }`}
+                  />
+                  <AnimatePresence>
+                    {errors.meetingPlace && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400 text-xs mt-2"
+                      >
+                        {errors.meetingPlace}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Estimated Price Display */}
+            {estimatedPrice && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-8 p-6 bg-gold/10 border border-gold/30 rounded-xl"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Estimated Total</p>
+                    <p className="text-3xl font-bold text-gold">₹{estimatedPrice.toLocaleString()}</p>
+                  </div>
+                  <svg className="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  * Final price may vary based on specific requirements and additional services
+                </p>
               </motion.div>
-            </div>
+            )}
 
             {/* Special Requests */}
             <motion.div variants={itemVariants} className="mb-8">
-              <label className="block text-sm font-semibold text-gold mb-3">
-                Special Requests
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Special Requests or Preferences
               </label>
               <textarea
                 name="specialRequests"
                 value={formData.specialRequests}
                 onChange={handleChange}
-                placeholder="Any special requests or preferences..."
-                rows="5"
-                className="w-full px-4 py-3 bg-dark-bg border border-gold/20 rounded-lg font-sans focus:border-gold/50 focus:outline-none transition-colors resize-none"
+                placeholder="Any specific requirements, preferences, or special requests..."
+                rows="4"
+                className="w-full px-4 py-3 bg-dark-bg border border-gold/20 rounded-lg text-white focus:border-gold/50 focus:outline-none transition-colors resize-none"
               />
             </motion.div>
 
-            {/* Submit Button */}
-            <motion.div variants={itemVariants}>
+            {/* Terms & Conditions */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <div className="flex items-start gap-3 p-4 bg-dark-bg rounded-lg border border-gold/20">
+                <input
+                  type="checkbox"
+                  id="agreeToTerms"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                  className="w-5 h-5 mt-0.5 bg-dark-bg border border-gold/30 rounded cursor-pointer accent-gold"
+                />
+                <label htmlFor="agreeToTerms" className="text-sm text-gray-400 cursor-pointer flex-1">
+                  I agree to the{' '}
+                  <Link to="/terms" className="text-gold hover:text-gold/80 transition">
+                    Terms and Conditions
+                  </Link>
+                  {' '}and{' '}
+                  <Link to="/privacy-policy" className="text-gold hover:text-gold/80 transition">
+                    Privacy Policy
+                  </Link>
+                  . I understand that this is a booking request and final confirmation will be provided by the team.
+                </label>
+              </div>
+              <AnimatePresence>
+                {errors.agreeToTerms && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-red-400 text-xs mt-2"
+                  >
+                    {errors.agreeToTerms}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Submit Buttons */}
+            <motion.div variants={itemVariants} className="space-y-4">
               <motion.button
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                type="submit"
+                disabled={isLoading}
+                className="w-full btn-gold py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Submit Booking Request
+                  </>
+                )}
+              </motion.button>
+
+              <motion.a
+                href="https://wa.me/1234567890"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="w-full btn-gold py-4 text-lg"
+                className="w-full inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-semibold transition-colors text-lg"
               >
-                Submit Booking Request
-              </motion.button>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.947 1.347l-.355.199-3.682.993 1.012-3.678-.235-.374A9.86 9.86 0 015.031 3.284c5.432 0 9.873 4.441 9.873 9.873 0 2.65-.997 5.151-2.813 7.06l-.262.214-3.822-1.02.667 2.989.261-.042a9.908 9.908 0 004.761-1.486l.327-.206 3.957 1.06-1.274-4.648.23-.365a9.884 9.884 0 001.395-5.159c0-5.432-4.441-9.873-9.873-9.873" />
+                </svg>
+                Quick Book via WhatsApp
+              </motion.a>
             </motion.div>
 
             {/* Privacy Note */}
@@ -419,8 +857,7 @@ function Booking() {
               variants={itemVariants}
               className="text-xs text-gray-500 text-center mt-6"
             >
-              Your information is secure and will only be used to process your booking. 
-              We respect your privacy completely.
+              🔒 Your information is encrypted and secure. We maintain complete confidentiality and discretion for all bookings.
             </motion.p>
           </motion.form>
         </div>
@@ -433,28 +870,119 @@ function Booking() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="grid md:grid-cols-3 gap-8"
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl font-serif font-bold text-gold mb-3">
+              Why Book With Us?
+            </h2>
+            <p className="text-gray-400">
+              Premium service with complete discretion and professionalism
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="grid md:grid-cols-4 gap-8"
           >
             <div className="text-center">
-              <div className="text-3xl mb-3">⏰</div>
+              <div className="text-4xl mb-3">⏰</div>
               <h3 className="text-lg font-serif font-bold text-gold mb-2">Quick Response</h3>
               <p className="text-sm text-gray-400">
-                We'll confirm your booking within 30 minutes.
+                Confirmed within 30 minutes. Available 24/7 for bookings.
               </p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-3">🔐</div>
-              <h3 className="text-lg font-serif font-bold text-gold mb-2">Discreet Service</h3>
+              <div className="text-4xl mb-3">🔐</div>
+              <h3 className="text-lg font-serif font-bold text-gold mb-2">100% Discreet</h3>
               <p className="text-sm text-gray-400">
-                Complete confidentiality and privacy guaranteed.
+                Complete confidentiality and privacy guaranteed on all services.
               </p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-3">💳</div>
+              <div className="text-4xl mb-3">✓</div>
+              <h3 className="text-lg font-serif font-bold text-gold mb-2">Verified Escorts</h3>
+              <p className="text-sm text-gray-400">
+                All companions are verified with authentic profiles and photos.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl mb-3">💳</div>
               <h3 className="text-lg font-serif font-bold text-gold mb-2">Flexible Payment</h3>
               <p className="text-sm text-gray-400">
-                Multiple payment options available for your convenience.
+                Cash, UPI, bank transfer - choose what works best for you.
               </p>
+            </div>
+          </motion.div>
+
+          {/* Additional Info Boxes */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-12 grid md:grid-cols-2 gap-6"
+          >
+            <div className="bg-dark-bg border border-gold/20 rounded-xl p-6">
+              <h3 className="text-xl font-serif font-bold text-gold mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                What Happens Next?
+              </h3>
+              <ol className="text-sm text-gray-400 space-y-2">
+                <li>1. Submit your booking request with all details</li>
+                <li>2. Our team reviews and confirms availability</li>
+                <li>3. You'll receive WhatsApp/Email confirmation within 30 min</li>
+                <li>4. Meet your companion at the scheduled time & place</li>
+              </ol>
+            </div>
+
+            <div className="bg-dark-bg border border-gold/20 rounded-xl p-6">
+              <h3 className="text-xl font-serif font-bold text-gold mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Important Information
+              </h3>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• Advance booking recommended for popular escorts</li>
+                <li>• Same-day bookings subject to availability</li>
+                <li>• Cancellations accepted up to 6 hours before</li>
+                <li>• Payment as per your selected preference</li>
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Contact Support */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-10 text-center"
+          >
+            <p className="text-gray-400 mb-4">
+              Have questions or need assistance with your booking?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 border border-gold/30 text-gold rounded-lg hover:bg-gold/10 transition font-semibold"
+                >
+                  Contact Support
+                </motion.button>
+              </Link>
+              <Link to="/faq">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 border border-gold/30 text-gold rounded-lg hover:bg-gold/10 transition font-semibold"
+                >
+                  View FAQ
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>

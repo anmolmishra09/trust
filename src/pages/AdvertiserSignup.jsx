@@ -19,6 +19,7 @@ function AdvertiserSignup() {
     website: '',
     averageRate: '',
     availability: 'part-time',
+    photos: [],
   })
 
   const [errors, setErrors] = useState({})
@@ -43,28 +44,84 @@ function AdvertiserSignup() {
     'Bangalore',
     'Hyderabad',
     'Pune',
-    'Goa',
-    'Chennai',
     'Kolkata',
-    'Chandigarh',
-    'Jaipur',
-    'Indore',
+    'Chennai',
     'Ahmedabad',
+    'Jaipur',
     'Surat',
     'Lucknow',
+    'Kanpur',
     'Nagpur',
-    'Visakhapatnam',
+    'Indore',
+    'Thane',
     'Bhopal',
+    'Visakhapatnam',
     'Patna',
     'Vadodara',
+    'Ghaziabad',
+    'Ludhiana',
     'Agra',
     'Nashik',
-    'Kochi',
-    'Coimbatore',
+    'Faridabad',
+    'Meerut',
+    'Rajkot',
+    'Kalyan-Dombivli',
+    'Varanasi',
+    'Srinagar',
+    'Aurangabad',
+    'Dhanbad',
+    'Amritsar',
+    'Navi Mumbai',
+    'Allahabad (Prayagraj)',
+    'Howrah',
+    'Ranchi',
+    'Jabalpur',
+    'Gwalior',
+    'Vijayawada',
+    'Jodhpur',
+    'Madurai',
+    'Raipur',
+    'Kota',
+    'Guwahati',
+    'Chandigarh',
+    'Solapur',
+    'Hubballi-Dharwad',
+    'Bareilly',
+    'Moradabad',
+    'Mysore (Mysuru)',
+    'Gurgaon (Gurugram)',
+    'Aligarh',
+    'Jalandhar',
+    'Tiruchirappalli',
+    'Bhubaneswar',
+    'Salem',
+    'Warangal',
+    'Guntur',
+    'Bhiwandi',
+    'Saharanpur',
+    'Gorakhpur',
+    'Bikaner',
+    'Amravati',
+    'Noida',
+    'Jamshedpur',
+    'Bhilai',
+    'Cuttack',
+    'Firozabad',
+    'Kochi (Cochin)',
+    'Bhavnagar',
+    'Dehradun',
+    'Durgapur',
+    'Asansol',
+    'Nanded',
+    'Kolhapur',
+    'Ajmer',
+    'Goa',
+    'Mangalore',
   ]
 
   const validateStep = (currentStep) => {
     const newErrors = {}
+    console.log('Validating step:', currentStep)
 
     if (currentStep === 1) {
       if (!formData.businessName.trim()) newErrors.businessName = 'Business name is required'
@@ -81,12 +138,14 @@ function AdvertiserSignup() {
     }
 
     if (currentStep === 3) {
-      if (!formData.description.trim()) newErrors.description = 'Profile description is required'
-      if (formData.description.length < 50) newErrors.description = 'Description must be at least 50 characters'
+      // Description is optional, no minimum length required
     }
 
     setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    console.log('Validation errors:', newErrors)
+    const isValid = Object.keys(newErrors).length === 0
+    console.log('Is valid:', isValid)
+    return isValid
   }
 
   const handleChange = (e) => {
@@ -112,9 +171,45 @@ function AdvertiserSignup() {
     }))
   }
 
+  const handlePhotoUpload = (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length === 0) return
+    
+    // Limit to 6 photos
+    const remainingSlots = 6 - formData.photos.length
+    const filesToAdd = files.slice(0, remainingSlots)
+    
+    filesToAdd.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setFormData(prev => ({
+            ...prev,
+            photos: [...prev.photos, { file, preview: reader.result }]
+          }))
+        }
+        reader.readAsDataURL(file)
+      }
+    })
+  }
+
+  const handleRemovePhoto = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleNextStep = () => {
-    if (validateStep(step)) {
+    console.log('handleNextStep called, current step:', step)
+    console.log('Current form data:', formData)
+    const isValid = validateStep(step)
+    console.log('Validation result:', isValid)
+    if (isValid) {
+      console.log('Moving to step:', step + 1)
       setStep(step + 1)
+    } else {
+      console.log('Validation failed, errors:', errors)
     }
   }
 
@@ -214,6 +309,10 @@ function AdvertiserSignup() {
               <p className="text-xl text-gray-400">
                 For free today! Create your profile and start connecting with clients
               </p>
+              {/* Debug: Show current step */}
+              <div className="mt-4 text-sm text-gray-500">
+                Current Step: {step} / 3
+              </div>
             </motion.div>
 
             {/* Progress Steps */}
@@ -243,6 +342,24 @@ function AdvertiserSignup() {
               ))}
             </motion.div>
 
+            {/* Debug: Current Step = {step} */}
+            
+            {/* Validation Errors Display */}
+            {Object.keys(errors).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg"
+              >
+                <p className="text-red-400 font-semibold mb-2">Please fix the following errors:</p>
+                <ul className="list-disc list-inside text-red-400 text-sm space-y-1">
+                  {Object.entries(errors).map(([field, message]) => (
+                    <li key={field}>{message}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+            
             {/* Step 1: Account Details */}
             <AnimatePresence mode="wait">
               {step === 1 && (
@@ -254,8 +371,8 @@ function AdvertiserSignup() {
                   transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
-                  <motion.div variants={itemVariants}>
-                    <h2 className="text-2xl font-serif font-bold mb-6">Account Information</h2>
+                  <div>
+                    <h2 className="text-2xl font-serif font-bold mb-6 text-white">Account Information</h2>
 
                     {/* Business Name */}
                     <div className="mb-6">
@@ -338,9 +455,9 @@ function AdvertiserSignup() {
                         <p className="text-red-400 text-sm mt-2">{errors.confirmPassword}</p>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div variants={itemVariants} className="flex gap-4 pt-6">
+                  <div className="flex gap-4 pt-6">
                     <Link to="/signin" className="flex-1">
                       <button
                         type="button"
@@ -356,7 +473,7 @@ function AdvertiserSignup() {
                     >
                       Next Step
                     </button>
-                  </motion.div>
+                  </div>
                 </motion.form>
               )}
 
@@ -370,8 +487,8 @@ function AdvertiserSignup() {
                   transition={{ duration: 0.3 }}
                   className="space-y-6"
                 >
-                  <motion.div variants={itemVariants}>
-                    <h2 className="text-2xl font-serif font-bold mb-6">Services & Rates</h2>
+                  <div>
+                    <h2 className="text-2xl font-serif font-bold mb-6 text-white">Services & Rates</h2>
 
                     {/* Location */}
                     <div className="mb-6">
@@ -454,9 +571,9 @@ function AdvertiserSignup() {
                         ))}
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div variants={itemVariants} className="flex gap-4 pt-6">
+                  <div className="flex gap-4 pt-6">
                     <button
                       type="button"
                       onClick={handlePrevStep}
@@ -471,7 +588,7 @@ function AdvertiserSignup() {
                     >
                       Next Step
                     </button>
-                  </motion.div>
+                  </div>
                 </motion.form>
               )}
 
@@ -486,17 +603,17 @@ function AdvertiserSignup() {
                   onSubmit={handleSubmit}
                   className="space-y-6"
                 >
-                  <motion.div variants={itemVariants}>
-                    <h2 className="text-2xl font-serif font-bold mb-6">Profile Information</h2>
+                  <div>
+                    <h2 className="text-2xl font-serif font-bold mb-6 text-white">Profile Information</h2>
 
                     {/* Description */}
                     <div className="mb-6">
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Profile Description</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Profile Description (Optional)</label>
                       <textarea
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        placeholder="Describe your services, experience, and what makes you unique (minimum 50 characters)"
+                        placeholder="Describe your services, experience, and what makes you unique (minimum 20 characters if provided)"
                         rows="6"
                         className={`w-full px-4 py-3 bg-dark-bg border rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-gold transition resize-none ${
                           errors.description ? 'border-red-500' : 'border-gold/30 hover:border-gold/50'
@@ -508,6 +625,59 @@ function AdvertiserSignup() {
                         </p>
                         {errors.description && <p className="text-red-400 text-sm">{errors.description}</p>}
                       </div>
+                    </div>
+
+                    {/* Photo Upload */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-gray-300 mb-3">Profile Photos (Optional)</label>
+                      <p className="text-gray-500 text-xs mb-3">Upload up to 6 photos. First photo will be your main profile picture.</p>
+                      
+                      {/* Upload Button */}
+                      {formData.photos.length < 6 && (
+                        <label className="cursor-pointer">
+                          <div className="border-2 border-dashed border-gold/30 rounded-lg p-8 text-center hover:border-gold/50 transition">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <p className="text-gold font-medium mb-1">Click to upload photos</p>
+                            <p className="text-gray-500 text-sm">PNG, JPG, GIF up to 10MB each</p>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                      
+                      {/* Photo Preview Grid */}
+                      {formData.photos.length > 0 && (
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+                          {formData.photos.map((photo, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={photo.preview}
+                                alt={`Upload ${index + 1}`}
+                                className="w-full h-32 object-cover rounded-lg border border-gold/30"
+                              />
+                              {index === 0 && (
+                                <span className="absolute top-2 left-2 bg-gold text-dark-bg text-xs font-bold px-2 py-1 rounded">Main</span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleRemovePhoto(index)}
+                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Website */}
@@ -532,9 +702,9 @@ function AdvertiserSignup() {
                         <span className="text-gold hover:underline cursor-pointer">Privacy Policy</span>
                       </label>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div variants={itemVariants} className="flex gap-4 pt-6">
+                  <div className="flex gap-4 pt-6">
                     <button
                       type="button"
                       onClick={handlePrevStep}
@@ -549,7 +719,7 @@ function AdvertiserSignup() {
                     >
                       {isLoading ? 'Creating Profile...' : 'Complete Registration'}
                     </button>
-                  </motion.div>
+                  </div>
                 </motion.form>
               )}
             </AnimatePresence>

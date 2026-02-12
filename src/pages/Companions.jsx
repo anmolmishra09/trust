@@ -1347,12 +1347,15 @@ function Escorts() {
                       >
                         <div className="card-glass overflow-hidden group cursor-pointer h-full flex flex-col hover:transform hover:-translate-y-2 transition-transform duration-300">
                           {/* Image */}
-                          <div className="relative h-96 overflow-hidden">
+                          <div className="relative h-96 overflow-hidden bg-dark-card">
                             <img
                               src={escort.image}
                               alt={`${escort.name}, ${escort.age} - ${escort.description} - ${escort.verified ? 'Verified ' : ''}Elite escort in ${escort.location} with ${escort.rating} rating`}
-                              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                              className="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-500"
                               loading="lazy"
+                              onError={(e) => {
+                                e.target.src = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'
+                              }}
                               onClick={(e) => {
                                 e.preventDefault()
                                 e.stopPropagation()

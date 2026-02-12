@@ -116,6 +116,26 @@ export const deleteProfile = (profileId) => {
   localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
 }
 
+export const deleteUserAccount = () => {
+  const user = getCurrentUser()
+  if (!user) {
+    throw new Error('No user is currently logged in')
+  }
+  
+  // Delete user's profile
+  const profiles = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]')
+  const updatedProfiles = profiles.filter(p => p.userId !== user.id)
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(updatedProfiles))
+  
+  // Delete user account
+  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+  const updatedUsers = users.filter(u => u.id !== user.id)
+  localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
+  
+  // Logout user
+  logoutUser()
+}
+
 // Helper function to convert image file to base64
 export const imageToBase64 = (file) => {
   return new Promise((resolve, reject) => {

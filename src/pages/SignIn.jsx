@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { loginUser } from '../services/profileService'
 
 function SignIn() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -15,6 +16,25 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message)
+      // Clear message after 5 seconds
+      setTimeout(() => setSuccessMessage(''), 5000)
+    }
+    
+    // Load remembered email
+    const rememberedEmail = localStorage.getItem('rememberedEmail')
+    if (rememberedEmail) {
+      setFormData(prev => ({
+        ...prev,
+        email: rememberedEmail,
+        rememberMe: true
+      }))
+    }
+  }, [location])
 
   const validateForm = () => {
     const newErrors = {}
@@ -56,7 +76,15 @@ function SignIn() {
     setIsLoading(true)
     
     try {
-      await loginUser(formData.email, formData.password)
+      const user = await loginUser(formData.email, formData.password)
+      
+      // Handle "Remember me" functionality
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberedEmail', formData.email)
+      } else {
+        localStorage.removeItem('rememberedEmail')
+      }
+      
       // Redirect to advertiser dashboard
       navigate('/advertiser-dashboard')
     } catch (error) {
@@ -112,6 +140,13 @@ function SignIn() {
                   Sign <span className="text-gold">In</span>
                 </h1>
                 <p className="text-gray-400 mb-8">Access your exclusive account</p>
+
+                {/* Success Message */}
+                {successMessage && (
+                  <div className="mb-4 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-400">
+                    {successMessage}
+                  </div>
+                )}
 
                 {/* Error Message */}
                 {errors.submit && (
@@ -195,7 +230,7 @@ function SignIn() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-gold to-gold/80 hover:from-gold/90 hover:to-gold/70 text-dark-bg font-bold py-3 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disable:scale-100"
+                    className="w-full bg-gradient-to-r from-gold to-gold/80 hover:from-gold/90 hover:to-gold/70 text-dark-bg font-bold py-3 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
                   >
                     {isLoading ? 'Signing In...' : 'Sign In'}
                   </button>

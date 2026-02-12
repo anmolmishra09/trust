@@ -13,6 +13,9 @@ import Booking from './pages/Booking'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import SignIn from './pages/SignIn'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResendConfirmation from './pages/ResendConfirmation'
 import AdvertiserSignup from './pages/AdvertiserSignup'
 import AdvertiserDashboard from './pages/AdvertiserDashboard'
 import Location from './pages/Location'
@@ -57,6 +60,9 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/signin" element={<SignIn />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/resend-confirmation" element={<ResendConfirmation />} />
               <Route path="/advertiser-signup" element={<AdvertiserSignup />} />
               <Route path="/advertiser-dashboard" element={<AdvertiserDashboard />} />
             </Routes>

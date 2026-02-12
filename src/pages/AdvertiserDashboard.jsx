@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getCurrentUser, getCurrentUserProfile, createProfile, logoutUser, imageToBase64 } from '../services/profileService'
+import { getCurrentUser, getCurrentUserProfile, createProfile, logoutUser, deleteUserAccount, imageToBase64 } from '../services/profileService'
 
 function AdvertiserDashboard() {
   const navigate = useNavigate()
@@ -12,6 +12,8 @@ function AdvertiserDashboard() {
   const [errors, setErrors] = useState({})
   const [successMessage, setSuccessMessage] = useState('')
   const [imagePreview, setImagePreview] = useState([null, null, null])
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
   
   const [formData, setFormData] = useState({
     name: '',
@@ -90,6 +92,26 @@ function AdvertiserDashboard() {
       }
     }
   }, [navigate])
+
+  const handleLogout = () => {
+    logoutUser()
+    navigate('/signin')
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') {
+      alert('Please type DELETE to confirm')
+      return
+    }
+
+    try {
+      deleteUserAccount()
+      alert('Your account has been successfully deleted')
+      navigate('/')
+    } catch (error) {
+      alert(error.message || 'Failed to delete account')
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -173,8 +195,8 @@ function AdvertiserDashboard() {
     if (!formData.name.trim()) newErrors.name = 'Name is required'
     if (!formData.age || formData.age < 18 || formData.age > 60) newErrors.age = 'Age must be between 18 and 60'
     if (!formData.location) newErrors.location = 'Location is required'
-    if (!formData.description.trim() || formData.description.length < 50) {
-      newErrors.description = 'Description must be at least 50 characters'
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required'
     }
     if (!formData.height) newErrors.height = 'Height is required'
     if (formData.languages.length === 0) newErrors.languages = 'Select at least one language'
@@ -236,11 +258,6 @@ function AdvertiserDashboard() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleLogout = () => {
-    logoutUser()
-    navigate('/signin')
   }
 
   if (!user) return null
@@ -639,8 +656,96 @@ function AdvertiserDashboard() {
               </button>
             </div>
           </motion.form>
+
+          {/* Danger Zone - Delete Account */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-12 border border-red-500/30 rounded-xl p-6 bg-red-900/10"
+          >
+            <h3 className="text-xl font-semibold text-red-400 mb-2 flex items-center gap-2">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Danger Zone
+            </h3>
+            <p className="text-gray-400 mb-4">
+              Once you delete your account, there is no going back. This will permanently delete your profile and all associated data.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(true)}
+              className="px-6 py-3 bg-red-500/20 border border-red-500 text-red-400 rounded-lg hover:bg-red-500/30 transition font-semibold"
+            >
+              Delete Account
+            </button>
+          </motion.div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-dark-card border border-red-500/30 rounded-xl p-8 max-w-md w-full"
+            >
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h2 className="text-3xl font-serif font-bold text-red-400 mb-2">
+                  Delete Account?
+                </h2>
+                <p className="text-gray-400">
+                  This action cannot be undone. All your data will be permanently deleted.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Type <span className="text-red-400 font-bold">DELETE</span> to confirm
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="Type DELETE"
+                  className="w-full px-4 py-3 bg-dark-bg border border-red-500/30 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-red-500 transition"
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false)
+                    setDeleteConfirmText('')
+                  }}
+                  className="flex-1 px-6 py-3 border border-gold/30 text-gold rounded-lg hover:bg-gold/10 transition font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteConfirmText !== 'DELETE'}
+                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Delete Forever
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

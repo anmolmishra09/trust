@@ -524,7 +524,7 @@ function Home() {
                       className="card-glass overflow-hidden group cursor-pointer"
                     >
                       {/* Image Gallery */}
-                      <div className="relative h-64 overflow-hidden">
+                      <div className="relative h-64 overflow-hidden bg-dark-card">
                         <motion.img
                           key={currentImage}
                           src={currentImage}
@@ -532,7 +532,10 @@ function Home() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.3 }}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 cursor-zoom-in"
+                          className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500 cursor-zoom-in"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'
+                          }}
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
@@ -752,48 +755,95 @@ function Home() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="space-y-3"
+            className="grid md:grid-cols-2 gap-6"
           >
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="card-glass overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+            {/* Left Column - First 6 FAQs */}
+            <div className="space-y-3">
+              {faqs.slice(0, 6).map((faq, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="card-glass overflow-hidden"
                 >
-                  <span className="font-semibold text-white pr-4">
-                    {faq.question}
-                  </span>
-                  <motion.svg
-                    animate={{ rotate: openFAQIndex === index ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-5 h-5 text-gold flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </motion.svg>
-                </button>
-                <AnimatePresence>
-                  {openFAQIndex === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                    <span className="font-semibold text-white pr-4">
+                      {faq.question}
+                    </span>
+                    <motion.svg
+                      animate={{ rotate: openFAQIndex === index ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
+                      className="w-5 h-5 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <div className="px-6 pb-4 text-gray-400 leading-relaxed">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="px-6 pb-4 text-gray-400 leading-relaxed">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Right Column - Last 6 FAQs */}
+            <div className="space-y-3">
+              {faqs.slice(6, 12).map((faq, index) => (
+                <motion.div
+                  key={index + 6}
+                  variants={itemVariants}
+                  className="card-glass overflow-hidden"
+                >
+                  <button
+                    onClick={() => toggleFAQ(index + 6)}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+                  >
+                    <span className="font-semibold text-white pr-4">
+                      {faq.question}
+                    </span>
+                    <motion.svg
+                      animate={{ rotate: openFAQIndex === index + 6 ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-5 h-5 text-gold flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </button>
+                  <AnimatePresence>
+                    {openFAQIndex === index + 6 && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="px-6 pb-4 text-gray-400 leading-relaxed">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
           <motion.div

@@ -5,6 +5,128 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 function FAQ() {
   const [openIndex, setOpenIndex] = useState(null)
+  const [selectedLocation, setSelectedLocation] = useState('All Locations')
+
+  const locations = [
+    'All Locations', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa', 'Chennai', 
+    'Kolkata', 'Chandigarh', 'Jaipur', 'Indore', 'Ahmedabad', 'Surat', 'Lucknow', 'Nagpur',
+    'Thane', 'Bhopal', 'Visakhapatnam', 'Patna', 'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra',
+    'Nashik', 'Faridabad', 'Meerut', 'Rajkot', 'Kalyan-Dombivli', 'Varanasi', 'Srinagar',
+    'Aurangabad', 'Dhanbad', 'Amritsar', 'Navi Mumbai', 'Allahabad (Prayagraj)', 'Howrah',
+    'Ranchi', 'Jabalpur', 'Gwalior', 'Coimbatore', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur',
+    'Kota', 'Guwahati', 'Solapur', 'Hubli-Dharwad', 'Bareilly', 'Moradabad', 'Mysuru (Mysore)',
+    'Tiruchirappalli', 'Salem', 'Aligarh', 'Bhubaneswar', 'Jalandhar', 'Gorakhpur', 'Guntur',
+    'Bikaner', 'Noida', 'Firozabad', 'Jamshedpur', 'Bhavnagar', 'Cuttack', 'Kochi', 'Dehradun',
+    'Asansol', 'Nellore', 'Ajmer', 'Kollam', 'Mangalore'
+  ]
+
+  const getLocationFAQs = (location) => {
+    if (location === 'All Locations') {
+      return [
+        {
+          question: 'What is Trusted Escort?',
+          answer: 'Trusted Escort is a premium escortship service connecting distinguished clients with sophisticated, verified escorts across major cities in India. We provide discreet, professional services for social events, business functions, travel, and personal occasions.',
+        },
+        {
+          question: 'How do I book a companion?',
+          answer: 'Browse our escorts page, select your preferred companion, and contact us via WhatsApp or our booking page. Our team will assist you with availability, rates, and special requests to ensure a seamless experience.',
+        },
+        {
+          question: 'Are all escorts verified?',
+          answer: 'Yes, all our escorts undergo a thorough verification process. Verified escorts are marked with a ✓ badge on their profiles, ensuring authenticity, professionalism, and quality of service.',
+        },
+        {
+          question: 'What are the payment methods?',
+          answer: 'We accept various payment methods including bank transfers, digital payments (UPI, Paytm, Google Pay), and cash. Payment terms and methods will be discussed during booking confirmation.',
+        },
+        {
+          question: 'Can I cancel or reschedule a booking?',
+          answer: 'Yes, cancellations and rescheduling are possible. Please notify us at least 24 hours in advance. Cancellation policies vary based on booking type and timing.',
+        },
+        {
+          question: 'How is my privacy protected?',
+          answer: 'We maintain absolute discretion. All client information is confidential and encrypted. We never share personal details with third parties. Our escorts are also bound by strict confidentiality agreements.',
+        },
+        {
+          question: 'What services are offered?',
+          answer: 'Our escorts provide social escortship services including dinner dates, corporate events, travel escortship, cultural events, shopping, entertainment, and more. Specific services are listed on each profile.',
+        },
+        {
+          question: 'Are there minimum booking durations?',
+          answer: 'Yes, minimum booking durations vary by service type. Typically, hourly bookings have a 2-hour minimum. Specific requirements are listed on each companion\'s profile.',
+        },
+        {
+          question: 'Is communication secure?',
+          answer: 'Yes, all communications through our platform are secure. We recommend using WhatsApp for booking inquiries as it offers end-to-end encryption.',
+        },
+        {
+          question: 'What is the age requirement?',
+          answer: 'You must be 18 years or older to use our services. Age verification is mandatory. All our escorts are also 18+ and verified.',
+        },
+        {
+          question: 'How do I contact customer support?',
+          answer: 'Our support team is available 24/7 via WhatsApp, phone, or through our contact form. We respond within minutes to ensure your needs are met promptly.',
+        },
+        {
+          question: 'What cities do you serve?',
+          answer: 'We currently operate in 69 major Indian cities including Mumbai, Delhi, Bangalore, Hyderabad, Pune, Goa, Chennai, Kolkata, and many more.',
+        },
+      ]
+    }
+
+    return [
+      {
+        question: `What areas of ${location} do you serve?`,
+        answer: `We provide escort services throughout ${location} and surrounding areas. Our companions can meet you at hotels, restaurants, events, or your preferred location within the city.`,
+      },
+      {
+        question: `How many escorts are available in ${location}?`,
+        answer: `We have a diverse selection of verified escorts in ${location}. Browse our ${location} escorts page to see all available companions with detailed profiles, photos, and rates.`,
+      },
+      {
+        question: `What are the rates for escorts in ${location}?`,
+        answer: `Rates vary based on the companion's experience, duration, and services. ${location} escorts typically charge ₹5,000-₹25,000+ per hour. View individual profiles for specific rates and package deals.`,
+      },
+      {
+        question: `How quickly can I book an escort in ${location}?`,
+        answer: `We offer same-day bookings in ${location} based on availability. For popular times or specific companions, we recommend booking 24-48 hours in advance to ensure availability.`,
+      },
+      {
+        question: `Are ${location} escorts available for outcall services?`,
+        answer: `Yes, most ${location} escorts offer both incall and outcall services. Outcall means the companion visits your hotel or residence. Additional travel charges may apply for distant locations.`,
+      },
+      {
+        question: `Can I book an escort for travel from ${location}?`,
+        answer: `Absolutely! Many ${location} escorts are available for domestic and international travel. Discuss travel arrangements, duration, and rates with our team during booking.`,
+      },
+      {
+        question: `What hotels in ${location} are escort-friendly?`,
+        answer: `Most 4-star and 5-star hotels in ${location} are suitable for escort meetings. We can recommend discreet, professional venues. Always book under your name and inform reception of expecting a guest.`,
+      },
+      {
+        question: `Are ${location} escorts available for dinner dates?`,
+        answer: `Yes! Dinner dates are very popular in ${location}. Our companions are well-educated, well-dressed, and perfect for upscale restaurants, business dinners, or social events.`,
+      },
+      {
+        question: `How do I verify an escort's identity in ${location}?`,
+        answer: `All ${location} escorts on our platform are verified with badge indicators on profiles. We verify ID, photos, and conduct background checks to ensure safety and authenticity.`,
+      },
+      {
+        question: `What languages do ${location} escorts speak?`,
+        answer: `${location} escorts typically speak English, Hindi, and local regional languages. Many are multilingual. Check individual profiles for language preferences and communication details.`,
+      },
+      {
+        question: `Can I request specific characteristics in ${location}?`,
+        answer: `Yes! Use our advanced filters to search by age, height, ethnicity, services offered, and more. Our ${location} escorts have diverse profiles to match your preferences.`,
+      },
+      {
+        question: `Is there 24/7 support for bookings in ${location}?`,
+        answer: `Yes, our customer support team is available 24/7 for ${location} bookings via WhatsApp and phone. We handle bookings, inquiries, and assistance at any time.`,
+      },
+    ]
+  }
+
+  const displayedFAQs = getLocationFAQs(selectedLocation)
 
   const faqs = [
     {
@@ -110,8 +232,7 @@ function FAQ() {
     },
   ]
 
-  const toggleQuestion = (categoryIndex, questionIndex) => {
-    const index = `${categoryIndex}-${questionIndex}`
+  const toggleQuestion = (index) => {
     setOpenIndex(openIndex === index ? null : index)
   }
 
@@ -171,16 +292,14 @@ function FAQ() {
             "name": "Frequently Asked Questions",
             "url": "https://www.trustedescort.com/faq",
             "description": "Find answers to frequently asked questions about our premium escort services, booking process, privacy, payment, and more.",
-            "mainEntity": faqs.flatMap(category => 
-              category.questions.map(q => ({
-                "@type": "Question",
-                "name": q.question,
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": q.answer
-                }
-              }))
-            )
+            "mainEntity": displayedFAQs.map(q => ({
+              "@type": "Question",
+              "name": q.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": q.answer
+              }
+            }))
           })}
         </script>
         
@@ -234,66 +353,150 @@ function FAQ() {
 
       {/* FAQ Content */}
       <section className="py-16 bg-dark-bg">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          {/* Location Filter */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
+            <div className="card-glass p-6">
+              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Filter by Location
+              </h3>
+              <div className="relative">
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="w-full bg-dark-bg border border-gold/20 text-white rounded-lg px-4 py-3 pr-10 focus:outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
+                >
+                  {locations.map((location) => (
+                    <option key={location} value={location}>
+                      {location}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              {selectedLocation !== 'All Locations' && (
+                <p className="text-gray-400 text-sm mt-3">
+                  Showing FAQs specific to {selectedLocation}
+                </p>
+              )}
+            </div>
+          </motion.div>
+
+          {/* FAQ Grid - Two Columns */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-8"
+            className="grid md:grid-cols-2 gap-6"
           >
-            {faqs.map((category, categoryIndex) => (
-              <motion.div key={categoryIndex} variants={itemVariants}>
-                <h2 className="text-2xl font-serif font-bold text-gold mb-6">
-                  {category.category}
-                </h2>
-                <div className="space-y-4">
-                  {category.questions.map((faq, questionIndex) => {
-                    const index = `${categoryIndex}-${questionIndex}`
-                    const isOpen = openIndex === index
+            {/* Left Column - First 6 FAQs */}
+            <div className="space-y-4">
+              {displayedFAQs.slice(0, 6).map((faq, index) => {
+                const isOpen = openIndex === index
 
-                    return (
-                      <motion.div
-                        key={questionIndex}
-                        className="card-glass overflow-hidden"
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    className="card-glass overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggleQuestion(index)}
+                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+                    >
+                      <span className="font-semibold text-white pr-4">
+                        {faq.question}
+                      </span>
+                      <motion.svg
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-5 h-5 text-gold flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        <button
-                          onClick={() => toggleQuestion(categoryIndex, questionIndex)}
-                          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </motion.svg>
+                    </button>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
                         >
-                          <span className="font-semibold text-white pr-4">
-                            {faq.question}
-                          </span>
-                          <motion.svg
-                            animate={{ rotate: isOpen ? 180 : 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="w-5 h-5 text-gold flex-shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </motion.svg>
-                        </button>
-                        <AnimatePresence>
-                          {isOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              <div className="px-6 pb-4 text-gray-400 leading-relaxed">
-                                {faq.answer}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              </motion.div>
-            ))}
+                          <div className="px-6 pb-4 text-gray-400 leading-relaxed">
+                            {faq.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            {/* Right Column - Last 6 FAQs */}
+            <div className="space-y-4">
+              {displayedFAQs.slice(6, 12).map((faq, index) => {
+                const actualIndex = index + 6
+                const isOpen = openIndex === actualIndex
+
+                return (
+                  <motion.div
+                    key={actualIndex}
+                    variants={itemVariants}
+                    className="card-glass overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggleQuestion(actualIndex)}
+                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+                    >
+                      <span className="font-semibold text-white pr-4">
+                        {faq.question}
+                      </span>
+                      <motion.svg
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-5 h-5 text-gold flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </motion.svg>
+                    </button>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="px-6 pb-4 text-gray-400 leading-relaxed">
+                            {faq.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
+            </div>
           </motion.div>
         </div>
       </section>
