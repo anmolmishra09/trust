@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import AgeVerificationModal from './components/AgeVerificationModal'
 import WhatsAppButton from './components/WhatsAppButton'
 import Home from './pages/Home'
+import HomeSimple from './pages/HomeSimple'
 import Escorts from './pages/Companions'
 import CompanionProfile from './pages/CompanionProfile'
 import Booking from './pages/Booking'
@@ -13,13 +14,14 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import SignIn from './pages/SignIn'
 import AdvertiserSignup from './pages/AdvertiserSignup'
+import AdvertiserDashboard from './pages/AdvertiserDashboard'
 import Location from './pages/Location'
 import FAQ from './pages/FAQ'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 
 function App() {
-  const [isAgeVerified, setIsAgeVerified] = useState(false)
+  const [isAgeVerified, setIsAgeVerified] = useState(true)
 
   useEffect(() => {
     const verified = localStorage.getItem('ageVerified')
@@ -44,6 +46,7 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/home-simple" element={<HomeSimple />} />
               <Route path="/escorts" element={<Escorts />} />
               <Route path="/companion/:id" element={<CompanionProfile />} />
               <Route path="/location/:city" element={<Location />} />
@@ -55,6 +58,7 @@ function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/advertiser-signup" element={<AdvertiserSignup />} />
+              <Route path="/advertiser-dashboard" element={<AdvertiserDashboard />} />
             </Routes>
           </main>
           

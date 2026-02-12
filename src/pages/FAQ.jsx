@@ -162,6 +162,49 @@ function FAQ() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* FAQPage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "name": "Frequently Asked Questions",
+            "url": "https://www.trustedescort.com/faq",
+            "description": "Find answers to frequently asked questions about our premium escort services, booking process, privacy, payment, and more.",
+            "mainEntity": faqs.flatMap(category => 
+              category.questions.map(q => ({
+                "@type": "Question",
+                "name": q.question,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": q.answer
+                }
+              }))
+            )
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.trustedescort.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "FAQ",
+                "item": "https://www.trustedescort.com/faq"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Header */}

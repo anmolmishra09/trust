@@ -1,19 +1,105 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { getAllProfiles } from '../services/profileService'
 
 function Home() {
   const navigate = useNavigate()
   const [imageIndices, setImageIndices] = useState({ 1: 0, 2: 0, 3: 0 })
   const [searchCity, setSearchCity] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [featuredEscorts, setFeaturedEscorts] = useState([])
+  const [lightboxImage, setLightboxImage] = useState(null)
+  
+  // Load featured escorts on component mount
+  useEffect(() => {
+    const loadFeaturedEscorts = () => {
+      // Get advertiser profiles from localStorage
+      const advertiserProfiles = getAllProfiles()
+      
+      // Default featured escorts (hardcoded fallback)
+      const defaultEscorts = [
+        {
+          id: 1,
+          name: 'Sakshi',
+          age: 24,
+          location: 'Mumbai',
+          gallery: [
+            '/images/profiles/Mumbai/profile-1.jpg',
+            '/images/profiles/Mumbai/profile-2.jpg',
+            '/images/profiles/Mumbai/profile-3.jpg',
+          ],
+          description: 'Elegant and sophisticated',
+        },
+        {
+          id: 2,
+          name: 'Ishita',
+          age: 26,
+          location: 'Delhi',
+          gallery: [
+            '/images/profiles/Delhi/profile-2.jpg',
+            '/images/profiles/Delhi/profile-3.jpg',
+            '/images/profiles/Delhi/profile-4.jpg',
+          ],
+          description: 'Charming and witty',
+        },
+        {
+          id: 3,
+          name: 'Krina',
+          age: 25,
+          location: 'Bangalore',
+          gallery: [
+            '/images/profiles/Bangalore/profile-3.jpg',
+            '/images/profiles/Bangalore/profile-4.jpg',
+            '/images/profiles/Bangalore/profile-5.jpg',
+          ],
+          description: 'Graceful and alluring',
+        },
+      ]
+      
+      // Combine advertiser profiles with default escorts (show up to 3 most recent)
+      const combinedEscorts = [...advertiserProfiles.slice(-3).reverse(), ...defaultEscorts].slice(0, 3)
+      
+      setFeaturedEscorts(combinedEscorts)
+      
+      // Initialize image indices for all escorts
+      const indices = {}
+      combinedEscorts.forEach(escort => {
+        indices[escort.id] = 0
+      })
+      setImageIndices(indices)
+    }
+    
+    loadFeaturedEscorts()
+  }, [])
+
+  // Handle ESC key to close lightbox
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape' && lightboxImage) {
+        setLightboxImage(null)
+      }
+    }
+    
+    window.addEventListener('keydown', handleEscKey)
+    return () => window.removeEventListener('keydown', handleEscKey)
+  }, [lightboxImage])
   
   const cities = [
     'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa',
     'Chennai', 'Kolkata', 'Chandigarh', 'Jaipur', 'Indore', 'Ahmedabad',
     'Surat', 'Lucknow', 'Nagpur', 'Visakhapatnam', 'Bhopal', 'Patna',
-    'Vadodara', 'Agra', 'Nashik', 'Kochi', 'Coimbatore'
+    'Vadodara', 'Agra', 'Nashik', 'Kochi', 'Coimbatore', 'Thane', 
+    'Ghaziabad', 'Ludhiana', 'Faridabad', 'Meerut', 'Rajkot', 
+    'Kalyan-Dombivli', 'Varanasi', 'Srinagar', 'Aurangabad', 'Dhanbad', 
+    'Amritsar', 'Navi Mumbai', 'Allahabad (Prayagraj)', 'Howrah', 'Ranchi', 
+    'Jabalpur', 'Gwalior', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur', 
+    'Kota', 'Guwahati', 'Solapur', 'Hubli-Dharwad', 'Bareilly', 'Moradabad', 
+    'Mysuru (Mysore)', 'Tiruchirappalli', 'Salem', 'Aligarh', 'Bhubaneswar', 
+    'Jalandhar', 'Gorakhpur', 'Guntur', 'Bikaner', 'Noida', 'Firozabad', 
+    'Jamshedpur', 'Bhavnagar', 'Cuttack', 'Dehradun', 'Asansol', 'Nellore', 
+    'Ajmer', 'Kollam', 'Mangalore'
   ]
   
   const filteredCities = cities.filter(city => 
@@ -88,44 +174,62 @@ function Home() {
     },
   ]
 
-  const featuredEscorts = [
+  const [openFAQIndex, setOpenFAQIndex] = useState(null)
+
+  const faqs = [
     {
-      id: 1,
-      name: 'Sakshi',
-      age: 24,
-      location: 'Mumbai',
-      gallery: [
-        'https://plus.unsplash.com/premium_photo-1668319914124-57301e0a1850?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://plus.unsplash.com/premium_photo-1668319915476-5cc7717e00f1?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://plus.unsplash.com/premium_photo-1727943107098-a0fff32b9382?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      ],
-      description: 'Elegant and sophisticated',
+      question: 'What is Trusted Escort?',
+      answer: 'Trusted Escort is a premium escortship service connecting distinguished clients with sophisticated, verified escorts across major cities in India. We provide discreet, professional services for social events, business functions, travel, and personal occasions.',
     },
     {
-      id: 2,
-      name: 'Ishita',
-      age: 26,
-      location: 'Delhi',
-      gallery: [
-        'https://images.unsplash.com/photo-1604004215656-5ea118076982?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1604004215290-46974324f9f5?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1604004382469-0eaf9e80a700?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      ],
-      description: 'Charming and witty',
+      question: 'How do I book a companion?',
+      answer: 'Browse our escorts page, select your preferred companion, and contact us via WhatsApp or our booking page. Our team will assist you with availability, rates, and special requests to ensure a seamless experience.',
     },
     {
-      id: 3,
-      name: 'Krina',
-      age: 25,
-      location: 'Bangalore',
-      gallery: [
-        'https://plus.unsplash.com/premium_photo-1668485966810-cbd0f685f58f?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://plus.unsplash.com/premium_photo-1668485968552-4ba2424c303b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://plus.unsplash.com/premium_photo-1668485968642-30e3d15e9b9c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      ],
-      description: 'Graceful and alluring',
+      question: 'Are all escorts verified?',
+      answer: 'Yes, all our escorts undergo a thorough verification process. Verified escorts are marked with a ✓ badge on their profiles, ensuring authenticity, professionalism, and quality of service.',
+    },
+    {
+      question: 'What cities do you serve?',
+      answer: 'We currently operate in 23 major Indian cities including Mumbai, Delhi, Bangalore, Hyderabad, Pune, Goa, Chennai, Kolkata, Chandigarh, Jaipur, Indore, Ahmedabad, Surat, Lucknow, Nagpur, and more.',
+    },
+    {
+      question: 'What are the payment methods?',
+      answer: 'We accept various payment methods including bank transfers, digital payments (UPI, Paytm, Google Pay), and cash. Payment terms and methods will be discussed during booking confirmation.',
+    },
+    {
+      question: 'Can I cancel or reschedule a booking?',
+      answer: 'Yes, cancellations and rescheduling are possible. Please notify us at least 24 hours in advance. Cancellation policies vary based on booking type and timing.',
+    },
+    {
+      question: 'How is my privacy protected?',
+      answer: 'We maintain absolute discretion. All client information is confidential and encrypted. We never share personal details with third parties. Our escorts are also bound by strict confidentiality agreements.',
+    },
+    {
+      question: 'What services are offered?',
+      answer: 'Our escorts provide social escortship services including dinner dates, corporate events, travel escortship, cultural events, shopping, entertainment, and more. Specific services are listed on each profile.',
+    },
+    {
+      question: 'Are there minimum booking durations?',
+      answer: 'Yes, minimum booking durations vary by service type. Typically, hourly bookings have a 2-hour minimum. Specific requirements are listed on each companion\'s profile.',
+    },
+    {
+      question: 'Is communication secure?',
+      answer: 'Yes, all communications through our platform are secure. We recommend using WhatsApp for booking inquiries as it offers end-to-end encryption.',
+    },
+    {
+      question: 'What is the age requirement?',
+      answer: 'You must be 18 years or older to use our services. Age verification is mandatory. All our escorts are also 18+ and verified.',
+    },
+    {
+      question: 'How do I contact customer support?',
+      answer: 'Our support team is available 24/7 via WhatsApp, phone, or through our contact form. We respond within minutes to ensure your needs are met promptly.',
     },
   ]
+
+  const toggleFAQ = (index) => {
+    setOpenFAQIndex(openFAQIndex === index ? null : index)
+  }
 
   return (
     <>
@@ -157,6 +261,48 @@ function Home() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* Organization Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Trusted Escort",
+            "url": "https://www.trustedescort.com",
+            "logo": "https://www.trustedescort.com/logo.png",
+            "description": "Premium escort service providing discreet, sophisticated companionship across major Indian cities. Elite escorts available 24/7.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "IN",
+              "addressLocality": "Mumbai"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "Customer Service",
+              "availableLanguage": ["English", "Hindi"],
+              "hoursAvailable": "Mo-Su 00:00-23:59"
+            },
+            "sameAs": [
+              "https://www.trustedescort.com/about",
+              "https://www.trustedescort.com/contact"
+            ]
+          })}
+        </script>
+        
+        {/* WebSite Schema with SearchAction */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Trusted Escort",
+            "url": "https://www.trustedescort.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://www.trustedescort.com/escorts?location={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          })}
+        </script>
       </Helmet>
 
       {/* Hero Section */}
@@ -300,13 +446,13 @@ function Home() {
                 View Escorts
               </motion.button>
             </Link>
-            <Link to="/booking">
+            <Link to="/advertiser-signup">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="btn-outline"
               >
-                Book Now
+                Post Your Ad
               </motion.button>
             </Link>
           </motion.div>
@@ -372,7 +518,7 @@ function Home() {
 
               return (
                 <motion.div key={companion.id} variants={itemVariants}>
-                  <Link to={`/companion/${companion.id}`}>
+                  <Link to={`/companion/${companion.id}`} target="_blank" rel="noopener noreferrer">
                     <motion.div
                       whileHover={{ y: -10 }}
                       className="card-glass overflow-hidden group cursor-pointer"
@@ -386,7 +532,12 @@ function Home() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.3 }}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 cursor-zoom-in"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            setLightboxImage(currentImage)
+                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/80 to-transparent" />
 
@@ -578,6 +729,92 @@ function Home() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-20 bg-dark-card border-t border-gold/10">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <motion.h2 variants={itemVariants} className="section-title">
+              Frequently Asked Questions
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-gray-400 text-lg mt-4">
+              Find answers to common questions about our premium escort services
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="space-y-3"
+          >
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="card-glass overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gold/5 transition-colors"
+                >
+                  <span className="font-semibold text-white pr-4">
+                    {faq.question}
+                  </span>
+                  <motion.svg
+                    animate={{ rotate: openFAQIndex === index ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-5 h-5 text-gold flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </motion.svg>
+                </button>
+                <AnimatePresence>
+                  {openFAQIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="px-6 pb-4 text-gray-400 leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-10"
+          >
+            <Link to="/faq">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-outline"
+              >
+                View All FAQs
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Locations Section */}
       <section className="py-20 bg-dark-card border-t border-gold/10">
         <div className="max-w-6xl mx-auto px-4 md:px-6">
@@ -672,6 +909,44 @@ function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxImage(null)}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-zoom-out"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 bg-gold/20 hover:bg-gold/40 backdrop-blur-md p-3 rounded-full text-gold transition-colors z-[101]"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </motion.button>
+            
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={lightboxImage}
+              alt="Full size preview"
+              className="max-w-full max-h-full object-contain cursor-default"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

@@ -157,6 +157,61 @@ function Contact() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* ContactPage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "name": "Contact Trusted Escort",
+            "url": "https://www.trustedescort.com/contact",
+            "description": "Get in touch with Trusted Escort. Available 24/7 for inquiries and bookings.",
+            "mainEntity": {
+              "@type": "Organization",
+              "name": "Trusted Escort",
+              "email": "info@trustedescort.com",
+              "telephone": "+91-9876543210",
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "contactType": "Customer Service",
+                  "email": "info@trustedescort.com",
+                  "availableLanguage": ["English", "Hindi"],
+                  "hoursAvailable": "Mo-Su 00:00-23:59"
+                },
+                {
+                  "@type": "ContactPoint",
+                  "contactType": "Booking Inquiries",
+                  "telephone": "+91-9876543210",
+                  "availableLanguage": ["English", "Hindi"],
+                  "hoursAvailable": "Mo-Su 00:00-23:59"
+                }
+              ]
+            }
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.trustedescort.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Contact",
+                "item": "https://www.trustedescort.com/contact"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Header */}

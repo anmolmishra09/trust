@@ -2,13 +2,21 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getAllProfiles } from '../services/profileService'
 
 function CompanionProfile() {
   const { id } = useParams()
+  const [isLoading, setIsLoading] = useState(true)
+  const [allEscortsData, setAllEscortsData] = useState([])
   
   // Image modal state
   const [showModal, setShowModal] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
+
+  // Loading effect
+  useEffect(() => {
+    window.scrollTo(0, 0) // Scroll to top when profile loads
+  }, [id])
 
   // Close modal on ESC key
   useEffect(() => {
@@ -24,9 +32,16 @@ function CompanionProfile() {
       window.removeEventListener('keydown', handleEscape)
     }
   }, [showModal])
-
-  // Complete companion database
-  const escortsData = [
+  
+  // Load all escorts including advertiser profiles
+  useEffect(() => {
+    const loadAllEscorts = () => {
+      setIsLoading(true)
+      // Get advertiser profiles
+      const advertiserProfiles = getAllProfiles()
+      
+      // Complete companion database (default hardcoded data)
+      const escortsData = [
     {
       id: 1,
       name: 'Sakshi',
@@ -158,7 +173,7 @@ function CompanionProfile() {
       name: 'Priya',
       age: 24,
       location: 'Mumbai',
-      image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&h=900&fit=crop',
+      image: 'https://plus.unsplash.com/premium_photo-1705018501151-4045c97658a3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       gallery: [
         'https://images.unsplash.com/photo-1504439904031-93ded9f93e4e?w=600&h=600&fit=crop',
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop',
@@ -844,10 +859,10 @@ function CompanionProfile() {
         'https://images.unsplash.com/photo-1582610285985-a42d9193f2fd?w=600&h=600&fit=crop',
         'https://images.unsplash.com/photo-1573496774774-92264933dd67?w=600&h=600&fit=crop',
       ], description: 'Graceful Lucknow kathak dancer with classical training', height: '5\'6"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Urdu'], services: ['Cultural Events', 'Dinner', 'Events'], rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' }, rating: 4.88, reviews: 130, verified: true, responseTime: '< 25 min', availability: 'Available' },
-    { id: 92, name: 'Khushbu', age: 24, location: 'Lucknow', image: 'https://images.unsplash.com/photo-1534008897995-27a23e859048?w=900&h=900&fit=crop', gallery: [
-        'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1615109398623-88346a601842?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1573879500645-ebe1fc4b9d84?w=600&h=600&fit=crop',
+    { id: 92, name: 'Khushbu', age: 24, location: 'Lucknow', image: 'https://images.unsplash.com/photo-1710262291995-bca99f46815b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fHw%3D', gallery: [
+        'https://plus.unsplash.com/premium_photo-1714195646981-221ce73e0d5f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDR8fHxlbnwwfHx8fHw%3D',
+        'https://images.unsplash.com/photo-1710262291995-bca99f46815b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fHw%3D',
+        'https://images.unsplash.com/photo-1710262291995-bca99f46815b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fHw%3D',
       ], description: 'Elegant Lucknow lawyer with professional expertise', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi'], services: ['Corporate Events', 'Dinner', 'Travel'], rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' }, rating: 4.85, reviews: 120, verified: true, responseTime: '< 28 min', availability: 'Available' },
     { id: 93, name: 'Fiza', age: 26, location: 'Lucknow', image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=900&h=900&fit=crop', gallery: [
         'https://images.unsplash.com/photo-1573879500208-f3c78c19e2b9?w=600&h=600&fit=crop',
@@ -1187,10 +1202,82 @@ function CompanionProfile() {
         'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop',
         'https://images.unsplash.com/photo-1551843073-4a9a5b6fcd5f?w=600&h=600&fit=crop',
       ], description: 'Charming Ahmedabad influencer', height: '5\'5"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Gujarati'], services: ['Events', 'Nightlife', 'Entertainment'], rates: { hourly: '₹4200', halfDay: '₹12600', fullDay: '₹22600', overnight: '₹27600' }, rating: 4.74, reviews: 89, verified: true, responseTime: '< 39 min', availability: 'Available' },
+    // Additional Mumbai escorts
+    { id: 158, name: 'Roshini', age: 26, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1582610285985-a42d9193f2fd?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1573496774774-92264933dd67?w=600&h=600&fit=crop',
+      ], description: 'Sophisticated Mumbai investment banker', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Corporate Events', 'Dinner', 'Travel'], rates: { hourly: '₹4900', halfDay: '₹14800', fullDay: '₹24800', overnight: '₹29800' }, rating: 4.91, reviews: 149, verified: true, responseTime: '< 22 min', availability: 'Available' },
+    { id: 159, name: 'Pooja', age: 24, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1551843073-4a9a5b6fcd5f?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1573496359172-d2e8df34d5c8?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1616530940355-351fabd9524b?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=600&fit=crop',
+      ], description: 'Vibrant Mumbai marketing executive', height: '5\'6"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Dinner', 'Events', 'Nightlife'], rates: { hourly: '₹4600', halfDay: '₹14000', fullDay: '₹24000', overnight: '₹29000' }, rating: 4.83, reviews: 112, verified: true, responseTime: '< 28 min', availability: 'Available' },
+    { id: 160, name: 'Kavya', age: 23, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1619945258699-35d5d8be80fa?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1604519926708-b9fa2f04e879?w=600&h=600&fit=crop',
+      ], description: 'Charming Mumbai PR professional', height: '5\'5"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Corporate Events', 'Shopping', 'Dinner'], rates: { hourly: '₹4400', halfDay: '₹13300', fullDay: '₹23300', overnight: '₹28300' }, rating: 4.79, reviews: 95, verified: true, responseTime: '< 34 min', availability: 'Available' },
+    { id: 161, name: 'Siya', age: 27, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1485875437342-9b39470b3d95?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=600&h=600&fit=crop',
+      ], description: 'Elegant Mumbai art gallery owner', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Cultural Events', 'Dinner', 'Travel'], rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' }, rating: 4.88, reviews: 133, verified: true, responseTime: '< 25 min', availability: 'Available' },
+    { id: 162, name: 'Disha', age: 25, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1598965675045-dc2c43f2f37e?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1601122424950-c5b70e0bf6bb?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1604072366595-e75dc92d6bdc?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1596215143922-eebd0d6ec0b5?w=600&h=600&fit=crop',
+      ], description: 'Sophisticated Mumbai jewelry designer', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Shopping', 'Events', 'Dinner'], rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' }, rating: 4.86, reviews: 126, verified: true, responseTime: '< 27 min', availability: 'Available' },
+    { id: 163, name: 'Meera', age: 22, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1562572159-4efc207f5aff?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1577880216142-8549e9488dad?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1570063578733-6a33b69d1439?w=600&h=600&fit=crop',
+      ], description: 'Young Mumbai social media influencer', height: '5\'4"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Nightlife', 'Events', 'Entertainment'], rates: { hourly: '₹4000', halfDay: '₹12000', fullDay: '₹22000', overnight: '₹27000' }, rating: 4.72, reviews: 81, verified: true, responseTime: '< 41 min', availability: 'Available' },
+    { id: 164, name: 'Riya', age: 28, location: 'Mumbai', image: 'https://images.unsplash.com/photo-1548142813-c348350df52b?w=900&h=900&fit=crop', gallery: [
+        'https://images.unsplash.com/photo-1573496359172-d2e8df34d5c8?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1616530940355-351fabd9524b?w=600&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=600&fit=crop',
+      ], description: 'Mature Mumbai corporate lawyer', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Corporate Events', 'Dinner', 'Travel'], rates: { hourly: '₹5000', halfDay: '₹15100', fullDay: '₹25400', overnight: '₹30400' }, rating: 4.94, reviews: 172, verified: true, responseTime: '< 18 min', availability: 'Available' },
   ]
+      
+      // Combine advertiser profiles with default escorts
+      const combined = [...advertiserProfiles, ...escortsData]
+      setAllEscortsData(combined)
+      setIsLoading(false)
+    }
+    
+    loadAllEscorts()
+  }, [])
 
   // Find companion by ID
-  const companion = escortsData.find(c => c.id === parseInt(id)) || escortsData[0]
+  const companion = allEscortsData.find(c => c.id === parseInt(id) || c.id === id)
+  
+  // If companion not found, show error
+  if (!isLoading && !companion) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-4xl font-serif font-bold text-gold mb-4">Profile Not Found</h1>
+          <p className="text-gray-400 mb-8">Sorry, the profile you're looking for doesn't exist.</p>
+          <Link to="/escorts" className="btn-gold">
+            Back to Escorts
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Show loading state
+  if (isLoading || !companion) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading profile...</p>
+        </div>
+      </div>
+    )
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -1217,11 +1304,11 @@ function CompanionProfile() {
         <meta name="title" content={`${companion.name} - ${companion.age}yo ${companion.location} Escort | Trusted Escort`} />
         <meta name="description" content={`Meet ${companion.name}, ${companion.age} years old from ${companion.location}. ${companion.description}. Rating: ${companion.rating}/5 (${companion.reviews} reviews). Available for bookings.`} />
         <meta name="keywords" content={`${companion.name} escort, ${companion.location} escort, ${companion.age} year old escort ${companion.location}, premium escort ${companion.location}`} />
-        <link rel="canonical" href={`https://www.trustedescort.com/companion/${id}`} />
+        <link rel="canonical" href={`https://www.trustedescort.com/escort/${id}`} />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="profile" />
-        <meta property="og:url" content={`https://www.trustedescort.com/companion/${id}`} />
+        <meta property="og:url" content={`https://www.trustedescort.com/escort/${id}`} />
         <meta property="og:title" content={`${companion.name} - ${companion.age}yo ${companion.location} Escort`} />
         <meta property="og:description" content={`Meet ${companion.name}, ${companion.age} years old from ${companion.location}. ${companion.description}`} />
         <meta property="og:image" content={companion.gallery[0]} />
@@ -1231,7 +1318,7 @@ function CompanionProfile() {
         
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={`https://www.trustedescort.com/companion/${id}`} />
+        <meta property="twitter:url" content={`https://www.trustedescort.com/escort/${id}`} />
         <meta property="twitter:title" content={`${companion.name} - ${companion.age}yo ${companion.location} Escort`} />
         <meta property="twitter:description" content={`Meet ${companion.name}, ${companion.age} years old from ${companion.location}.`} />
         <meta property="twitter:image" content={companion.gallery[0]} />
@@ -1408,6 +1495,36 @@ function CompanionProfile() {
             </motion.div>
           </motion.div>
 
+          {/* About Me Section */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants}>
+              <h2 className="text-4xl font-serif font-bold text-gold mb-6">About {companion.name}</h2>
+              <div className="card-glass p-8 space-y-4">
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  {companion.description} I am a professional companion dedicated to providing exceptional experiences 
+                  for discerning clients in {companion.location}. With {companion.languages.join(', ')} language proficiency, 
+                  I can communicate fluently and make you feel comfortable in any setting.
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  My {companion.age} years of age brings the perfect balance of youthful energy and mature sophistication. 
+                  Standing at {companion.height} with {companion.hair.toLowerCase()} hair and {companion.eyes.toLowerCase()} eyes, 
+                  I take pride in maintaining my appearance and health.
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  Whether you need a companion for corporate events, social gatherings, intimate dinners, or private moments, 
+                  I ensure complete discretion and professionalism. My reviews speak for themselves - {companion.rating} stars 
+                  from {companion.reviews} satisfied clients who appreciate quality companionship.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
           {/* Services and Rates */}
           <motion.div
             variants={containerVariants}
@@ -1448,6 +1565,247 @@ function CompanionProfile() {
                   </motion.div>
                 ))}
               </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Availability & Booking Info */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants}>
+              <h2 className="text-4xl font-serif font-bold text-gold mb-6">Availability & Booking</h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="card-glass p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <span className="text-2xl">✓</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gold">Current Status</h3>
+                      <p className="text-green-300">{companion.availability}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    I typically respond within {companion.responseTime}. For same-day bookings, 
+                    please contact me as early as possible to ensure availability.
+                  </p>
+                </div>
+
+                <div className="card-glass p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gold">Advance Booking</h3>
+                      <p className="text-gray-300">Recommended</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    For the best experience, advance bookings of 24-48 hours are preferred. 
+                    This ensures I can prepare and give you my undivided attention.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Special Features */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants}>
+              <h2 className="text-4xl font-serif font-bold text-gold mb-6">What Makes Me Special</h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="card-glass p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/10 flex items-center justify-center">
+                    <span className="text-3xl">⭐</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gold mb-2">Verified Profile</h3>
+                  <p className="text-gray-400 text-sm">
+                    100% authentic photos and verified identity for your peace of mind.
+                  </p>
+                </div>
+
+                <div className="card-glass p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/10 flex items-center justify-center">
+                    <span className="text-3xl">🎓</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gold mb-2">Well Educated</h3>
+                  <p className="text-gray-400 text-sm">
+                    Engaging conversation and cultural awareness for any social setting.
+                  </p>
+                </div>
+
+                <div className="card-glass p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/10 flex items-center justify-center">
+                    <span className="text-3xl">🔒</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gold mb-2">Discreet & Private</h3>
+                  <p className="text-gray-400 text-sm">
+                    Complete confidentiality and respect for your privacy guaranteed.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Client Reviews */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants}>
+              <h2 className="text-4xl font-serif font-bold text-gold mb-6">Client Reviews</h2>
+              <div className="space-y-6">
+                <div className="card-glass p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-yellow-400 text-xl">★★★★★</div>
+                    <span className="text-gray-400 text-sm">5.0 / 5.0</span>
+                  </div>
+                  <p className="text-gray-300 italic mb-3">
+                    "Absolutely wonderful experience! {companion.name} was professional, charming, and made the evening 
+                    truly memorable. Would highly recommend for corporate events."
+                  </p>
+                  <p className="text-gray-500 text-sm">- Business Executive, {companion.location}</p>
+                </div>
+
+                <div className="card-glass p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-yellow-400 text-xl">★★★★★</div>
+                    <span className="text-gray-400 text-sm">5.0 / 5.0</span>
+                  </div>
+                  <p className="text-gray-300 italic mb-3">
+                    "Best companion service I've experienced. Great conversation, beautiful, and very professional. 
+                    The {companion.responseTime} response time is impressive!"
+                  </p>
+                  <p className="text-gray-500 text-sm">- International Traveler</p>
+                </div>
+
+                <div className="card-glass p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-yellow-400 text-xl">★★★★★</div>
+                    <span className="text-gray-400 text-sm">{companion.rating} / 5.0</span>
+                  </div>
+                  <p className="text-gray-300 italic mb-3">
+                    "Exceptional service and genuine companionship. {companion.name} made me feel comfortable 
+                    throughout our time together. Highly recommend!"
+                  </p>
+                  <p className="text-gray-500 text-sm">- Regular Client, {companion.location}</p>
+                </div>
+              </div>
+              <div className="mt-6 text-center">
+                <p className="text-gray-400">
+                  Based on <span className="text-gold font-semibold">{companion.reviews} verified reviews</span>
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Important Information */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants}>
+              <h2 className="text-4xl font-serif font-bold text-gold mb-6">Important Information</h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="card-glass p-6">
+                  <h3 className="text-xl font-semibold text-gold mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Booking Guidelines
+                  </h3>
+                  <ul className="space-y-2 text-gray-300 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Advance booking recommended for best availability</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Minimum booking duration: 2 hours</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Outcall services available to hotels and private residences</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Travel within {companion.location} included in rates</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="card-glass p-6">
+                  <h3 className="text-xl font-semibold text-gold mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Privacy & Safety
+                  </h3>
+                  <ul className="space-y-2 text-gray-300 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Complete discretion and confidentiality guaranteed</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Regular health check-ups maintained</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Respectful behavior expected from all clients</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-gold mt-1">•</span>
+                      <span>Right to refuse service if feeling uncomfortable</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Final CTA */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-20 pt-20 border-t border-gold/10"
+          >
+            <motion.div variants={itemVariants} className="text-center">
+              <h2 className="text-4xl font-serif font-bold text-gold mb-4">Ready to Book?</h2>
+              <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+                Contact me now to arrange an unforgettable experience. I look forward to meeting you 
+                and creating wonderful memories together in {companion.location}.
+              </p>
+              <Link to="/booking">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="btn-gold text-xl px-12 py-4"
+                >
+                  Book {companion.name} Now
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

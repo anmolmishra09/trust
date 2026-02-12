@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
+import { loginUser } from '../services/profileService'
 
 function SignIn() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,12 +54,16 @@ function SignIn() {
     if (!validateForm()) return
 
     setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Sign in with:', formData)
+    
+    try {
+      await loginUser(formData.email, formData.password)
+      // Redirect to advertiser dashboard
+      navigate('/advertiser-dashboard')
+    } catch (error) {
+      setErrors({ submit: error.message || 'Invalid email or password' })
+    } finally {
       setIsLoading(false)
-      // In a real app, you'd redirect to dashboard here
-    }, 1500)
+    }
   }
 
   const containerVariants = {
@@ -106,6 +112,13 @@ function SignIn() {
                   Sign <span className="text-gold">In</span>
                 </h1>
                 <p className="text-gray-400 mb-8">Access your exclusive account</p>
+
+                {/* Error Message */}
+                {errors.submit && (
+                  <div className="mb-4 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-400">
+                    {errors.submit}
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Email Field */}

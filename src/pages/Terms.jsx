@@ -237,6 +237,44 @@ function Terms() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* WebPage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Terms and Conditions",
+            "url": "https://www.trustedescort.com/terms",
+            "description": "Read our terms and conditions governing the use of Trusted Escort services. Understand your rights and obligations.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Trusted Escort",
+              "url": "https://www.trustedescort.com"
+            }
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.trustedescort.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Terms and Conditions",
+                "item": "https://www.trustedescort.com/terms"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Header */}

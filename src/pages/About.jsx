@@ -73,6 +73,47 @@ function About() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* AboutPage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "name": "About Trusted Escort",
+            "url": "https://www.trustedescort.com/about",
+            "description": "Learn about Trusted Escort's commitment to discretion, excellence, and unforgettable experiences. Premium escort services with absolute confidentiality.",
+            "mainEntity": {
+              "@type": "Organization",
+              "name": "Trusted Escort",
+              "url": "https://www.trustedescort.com",
+              "description": "Premium escort service providing sophisticated companionship across major Indian cities.",
+              "foundingDate": "2020",
+              "slogan": "Exclusive Companionship, Redefined"
+            }
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.trustedescort.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "About",
+                "item": "https://www.trustedescort.com/about"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Header */}

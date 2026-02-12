@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
+import { registerUser } from '../services/profileService'
 
 function AdvertiserSignup() {
   const navigate = useNavigate()
@@ -126,13 +127,26 @@ function AdvertiserSignup() {
     if (!validateStep(step)) return
 
     setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Advertiser profile created:', formData)
-      setIsLoading(false)
-      // Show success and redirect
+    
+    try {
+      // Register the user
+      const userData = {
+        businessName: formData.businessName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      }
+      
+      await registerUser(userData)
+      
+      // Show success and redirect to signin
+      alert('Account created successfully! Please sign in to create your profile.')
       navigate('/signin')
-    }, 1500)
+    } catch (error) {
+      alert(error.message || 'Failed to create account. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const containerVariants = {

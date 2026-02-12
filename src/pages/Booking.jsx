@@ -123,17 +123,17 @@ function Booking() {
     <>
       <Helmet>
         {/* Primary Meta Tags */}
-        <title>Book a Companion | Trusted Escort</title>
-        <meta name="title" content="Book a Companion | Trusted Escort" />
-        <meta name="description" content="Book your exclusive companion experience today. Easy online booking for premium escort services. Available 24/7 across major Indian cities." />
-        <meta name="keywords" content="book escort, escort booking, companion booking, schedule escort, hire companion, premium escort booking India" />
+        <title>Book an Escort | Trusted Escort</title>
+        <meta name="title" content="Book an Escort | Trusted Escort" />
+        <meta name="description" content="Book your exclusive escort experience today. Easy online booking for premium escort services. Available 24/7 across major Indian cities." />
+        <meta name="keywords" content="book escort, escort booking, schedule escort, hire escort, premium escort booking India" />
         <link rel="canonical" href="https://www.trustedescort.com/booking" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.trustedescort.com/booking" />
-        <meta property="og:title" content="Book a Companion | Trusted Escort" />
-        <meta property="og:description" content="Book your exclusive companion experience today. Easy online booking for premium escort services." />
+        <meta property="og:title" content="Book an Escort | Trusted Escort" />
+        <meta property="og:description" content="Book your exclusive escort experience today. Easy online booking for premium escort services." />
         <meta property="og:image" content="https://www.trustedescort.com/og-image.jpg" />
         <meta property="og:locale" content="en_IN" />
         <meta property="og:site_name" content="Trusted Escort" />
@@ -141,8 +141,8 @@ function Booking() {
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://www.trustedescort.com/booking" />
-        <meta property="twitter:title" content="Book a Companion | Trusted Escort" />
-        <meta property="twitter:description" content="Book your exclusive companion experience today." />
+        <meta property="twitter:title" content="Book an Escort | Trusted Escort" />
+        <meta property="twitter:description" content="Book your exclusive escort experience today." />
         <meta property="twitter:image" content="https://www.trustedescort.com/og-image.jpg" />
         
         {/* Additional SEO */}
@@ -163,7 +163,7 @@ function Booking() {
               Book Your <span className="text-gold">Experience</span>
             </h1>
             <p className="text-xl text-gray-400">
-              Select your companion and schedule your exclusive appointment.
+              Select your escort and schedule your exclusive appointment.
             </p>
           </motion.div>
         </div>

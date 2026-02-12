@@ -163,6 +163,44 @@ function PrivacyPolicy() {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <meta name="author" content="Trusted Escort" />
+        
+        {/* WebPage Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Privacy Policy",
+            "url": "https://www.trustedescort.com/privacy-policy",
+            "description": "Read our privacy policy to understand how we collect, use, and protect your personal information. Complete data protection and confidentiality guaranteed.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Trusted Escort",
+              "url": "https://www.trustedescort.com"
+            }
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.trustedescort.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Privacy Policy",
+                "item": "https://www.trustedescort.com/privacy-policy"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Header */}
