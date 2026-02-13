@@ -1,4 +1,5 @@
 // Shared escort data service for Companions and CompanionProfile pages
+import { defaultEscorts } from './defaultEscorts.js'
 
 // Generate full profile details from basic escort data
 export const generateFullProfile = (escort) => {
@@ -23,8 +24,8 @@ export const generateFullProfile = (escort) => {
   }
 }
 
-// This will be populated by Companions.jsx
-let allEscortsData = []
+// Initialize with default escorts so they're always available
+let allEscortsData = [...defaultEscorts]
 
 export const setAllEscorts = (escorts) => {
   allEscortsData = escorts
@@ -33,6 +34,9 @@ export const setAllEscorts = (escorts) => {
 export const getAllEscorts = () => {
   return allEscortsData
 }
+
+// Export defaultEscorts for direct use
+export { defaultEscorts }
 
 export const getEscortById = (id) => {
   const escort = allEscortsData.find(e => e.id === parseInt(id) || e.id === id)
