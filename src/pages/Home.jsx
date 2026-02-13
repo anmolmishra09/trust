@@ -528,7 +528,7 @@ function Home() {
               return (
                 <motion.div key={companion.id} variants={itemVariants}>
                   <Link 
-                    to={companion.id === 1 || companion.id === 2 || companion.id === 3 ? `/escorts?location=${companion.location}` : `/companion/${companion.id}`} 
+                    to={companion.id === 1 || companion.id === 2 || companion.id === 3 ? `/escorts?location=${companion.location}` : `/escorts/${companion.id}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >

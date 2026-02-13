@@ -6,8 +6,8 @@ import { getAllProfiles } from '../services/profileService'
 import { getAllEscorts, getEscortById, defaultEscorts } from '../services/escortData'
 
 function CompanionProfile() {
-  const { id } = useParams()
-  console.log('🔍 CompanionProfile component mounted - Requested ID:', id)
+  const { slug } = useParams()
+  console.log('🔍 CompanionProfile component mounted - Requested slug:', slug)
   
   const [companion, setCompanion] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -15,11 +15,28 @@ function CompanionProfile() {
   // Image modal state
   const [showModal, setShowModal] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
+  
+  // Cities list for locations section
+  const cities = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Goa',
+    'Chennai', 'Kolkata', 'Chandigarh', 'Jaipur', 'Indore', 'Ahmedabad',
+    'Surat', 'Lucknow', 'Nagpur', 'Visakhapatnam', 'Bhopal', 'Patna',
+    'Vadodara', 'Agra', 'Nashik', 'Kochi', 'Coimbatore', 'Thane', 
+    'Ghaziabad', 'Ludhiana', 'Faridabad', 'Meerut', 'Rajkot', 
+    'Kalyan-Dombivli', 'Varanasi', 'Srinagar', 'Aurangabad', 'Dhanbad', 
+    'Amritsar', 'Navi Mumbai', 'Allahabad (Prayagraj)', 'Howrah', 'Ranchi', 
+    'Jabalpur', 'Gwalior', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur', 
+    'Kota', 'Guwahati', 'Solapur', 'Hubli-Dharwad', 'Bareilly', 'Moradabad', 
+    'Mysuru (Mysore)', 'Tiruchirappalli', 'Salem', 'Aligarh', 'Bhubaneswar', 
+    'Jalandhar', 'Gorakhpur', 'Guntur', 'Bikaner', 'Noida', 'Firozabad', 
+    'Jamshedpur', 'Bhavnagar', 'Cuttack', 'Dehradun', 'Asansol', 'Nellore', 
+    'Ajmer', 'Kollam', 'Mangalore'
+  ]
 
   // Loading effect
   useEffect(() => {
     window.scrollTo(0, 0) // Scroll to top when profile loads
-  }, [id])
+  }, [slug])
 
   // Close modal on ESC key
   useEffect(() => {
@@ -40,7 +57,7 @@ function CompanionProfile() {
   useEffect(() => {
     const loadCompanion = () => {
       console.log('=== CompanionProfile Loading ===')
-      console.log('Requested ID:', id)
+      console.log('Requested slug:', slug)
       setIsLoading(true)
       
       try {
@@ -57,17 +74,18 @@ function CompanionProfile() {
         
         console.log('Total escorts available:', allEscorts.length)
         
-        // Find companion by ID (try both string and number matching)
+        // Find companion by slug (name-id format) or by ID
         const foundCompanion = allEscorts.find(c => {
-          return c.id === parseInt(id) || c.id === id || String(c.id) === String(id)
+          const escortSlug = `${c.name.toLowerCase().replace(/\s+/g, '-')}-${c.id}`
+          return escortSlug === slug || c.id === parseInt(slug) || String(c.id) === String(slug)
         })
         
         if (foundCompanion) {
           console.log('✓ Companion found:', foundCompanion.name, foundCompanion.location)
           setCompanion(foundCompanion)
         } else {
-          console.log('✗ Companion NOT found for ID:', id)
-          console.log('Sample IDs:', allEscorts.slice(700, 710).map(e => ({ id: e.id, name: e.name, location: e.location })))
+          console.log('✗ Companion NOT found for slug:', slug)
+          console.log('Sample slugs:', allEscorts.slice(700, 710).map(e => ({ slug: `${e.name.toLowerCase().replace(/\s+/g, '-')}-${e.id}`, name: e.name, location: e.location })))
           setCompanion(null)
         }
       } catch (error) {
@@ -82,7 +100,7 @@ function CompanionProfile() {
     const timer = setTimeout(loadCompanion, 100)
     
     return () => clearTimeout(timer)
-  }, [id])
+  }, [slug])
   
   // Show loading state
   if (isLoading) {
@@ -90,7 +108,7 @@ function CompanionProfile() {
       <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading profile for ID: {id}...</p>
+          <p className="text-gray-400">Loading profile...</p>
           <p className="text-xs text-gray-500 mt-2">Please check console (F12) for debug logs</p>
         </div>
       </div>
@@ -184,12 +202,16 @@ function CompanionProfile() {
       
       <div className="min-h-screen bg-dark-bg text-white">
         {/* Hero Section with Image */}
-        <div className="relative h-[70vh] overflow-hidden">
+        <div className="relative h-[70vh] min-h-[500px] max-h-[800px] overflow-hidden bg-dark-card">
           <img
             src={companion.image}
             alt={`${companion.name}, ${companion.age} - ${companion.description}`}
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-700"
             onClick={() => handleImageClick(companion.image)}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://via.placeholder.com/800x1200/1a1a1a/d4af37?text=Image+Not+Available'
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/50 to-transparent" />
           
@@ -618,6 +640,79 @@ function CompanionProfile() {
               </motion.div>
             </div>
           </div>
+
+          {/* Our Locations Section */}
+          <section className="py-16 border-t border-gold/10 mt-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl font-serif font-bold text-gold mb-4">
+                Our Locations
+              </h2>
+              <p className="text-gray-400 text-lg">
+                Premium escort services available in major cities across India
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ staggerChildren: 0.05 }}
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
+            >
+              {cities.map((city, index) => (
+                <motion.div
+                  key={city}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.02 }}
+                >
+                  <Link to={`/escorts?location=${city}`}>
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="card-glass p-4 text-center cursor-pointer group relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-dark-bg/95 via-dark-card/90 to-dark-bg/95 group-hover:from-dark-card/80 group-hover:via-gold/10 group-hover:to-dark-card/80 transition-all"></div>
+                      <div className="relative z-10 text-2xl mb-2">📍</div>
+                      <h3 className="relative z-10 text-sm font-semibold text-white group-hover:text-gold transition-colors">
+                        {city}
+                      </h3>
+                      <div className="relative z-10 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                        <span className="text-xs text-gold">View Escorts →</span>
+                      </div>
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Quick Action */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center mt-8"
+            >
+              <p className="text-gray-400 text-sm mb-4">
+                Click any city to view available escorts in that location
+              </p>
+              <Link to="/escorts">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-3 border-2 border-gold text-gold rounded-lg font-semibold hover:bg-gold/10 transition"
+                >
+                  View All Escorts
+                </motion.button>
+              </Link>
+            </motion.div>
+          </section>
 
           {/* Back to Escorts */}
           <div className="mt-12 text-center">

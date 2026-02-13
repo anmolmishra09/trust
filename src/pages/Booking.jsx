@@ -103,7 +103,7 @@ function Booking() {
     }
     if (!formData.date) newErrors.date = 'Date is required'
     if (!formData.time) newErrors.time = 'Time is required'
-    if (!formData.companion) newErrors.companion = 'Please select a companion'
+    if (!formData.companion) newErrors.companion = 'Please select an escort'
     if (!formData.serviceType) newErrors.serviceType = 'Please select service type'
     if (!formData.duration) newErrors.duration = 'Please select duration'
     if (!formData.location) newErrors.location = 'Please select location'
@@ -402,10 +402,10 @@ function Booking() {
               </h2>
 
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Companion */}
+                {/* Escort */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-gray-300 mb-2">
-                    Select Companion <span className="text-red-400">*</span>
+                    Select Escort <span className="text-red-400">*</span>
                   </label>
                   <select
                     name="companion"
@@ -417,7 +417,7 @@ function Booking() {
                         : 'border-gold/20 focus:border-gold/50'
                     }`}
                   >
-                    <option value="">-- Select a Companion --</option>
+                    <option value="">-- Select an Escort --</option>
                     {escorts.map((comp) => (
                       <option key={comp.id} value={`${comp.name} - ${comp.age}, ${comp.location}`}>
                         {comp.verified && '✓ '}{comp.name} - {comp.age}, {comp.location} - ★{comp.rating} ({comp.reviews} reviews)
@@ -904,7 +904,7 @@ function Booking() {
               <div className="text-4xl mb-3">✓</div>
               <h3 className="text-lg font-serif font-bold text-gold mb-2">Verified Escorts</h3>
               <p className="text-sm text-gray-400">
-                All companions are verified with authentic profiles and photos.
+                All escorts are verified with authentic profiles and photos.
               </p>
             </div>
             <div className="text-center">
@@ -934,7 +934,7 @@ function Booking() {
                 <li>1. Submit your booking request with all details</li>
                 <li>2. Our team reviews and confirms availability</li>
                 <li>3. You'll receive WhatsApp/Email confirmation within 30 min</li>
-                <li>4. Meet your companion at the scheduled time & place</li>
+                <li>4. Meet your escort at the scheduled time & place</li>
               </ol>
             </div>
 

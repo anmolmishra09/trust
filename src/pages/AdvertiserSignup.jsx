@@ -16,7 +16,6 @@ function AdvertiserSignup() {
     location: '',
     services: [],
     description: '',
-    website: '',
     averageRate: '',
     availability: 'part-time',
     photos: [],
@@ -693,19 +692,6 @@ function AdvertiserSignup() {
                           ))}
                         </div>
                       )}
-                    </div>
-
-                    {/* Website */}
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Website (Optional)</label>
-                      <input
-                        type="url"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleChange}
-                        placeholder="https://yourwebsite.com"
-                        className="w-full px-4 py-3 bg-dark-bg border border-gold/30 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-gold transition hover:border-gold/50"
-                      />
                     </div>
 
                     {/* Terms */}

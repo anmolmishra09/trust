@@ -506,7 +506,7 @@ function Escorts() {
                   {filteredEscorts.map((escort) => (
                     <div key={escort.id}>
                       <Link 
-                        to={`/companion/${escort.id}`}
+                        to={`/escorts/${escort.name.toLowerCase().replace(/\s+/g, '-')}-${escort.id}`}
                         aria-label={`View profile of ${escort.name}, ${escort.age} year old ${escort.verified ? 'verified ' : ''}escort in ${escort.location}`}
                       >
                         <div className="card-glass overflow-hidden group cursor-pointer h-full flex flex-col hover:transform hover:-translate-y-2 transition-transform duration-300">

@@ -437,7 +437,7 @@ function Contact() {
         </div>
       </section>
 
-      {/* Service Locations */}
+      {/* Our Locations */}
       <section className="py-20 bg-dark-card border-t border-gold/10">
         <div className="max-w-6xl mx-auto px-4 md:px-6">
           <motion.div
@@ -446,7 +446,7 @@ function Contact() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="section-title">Service Locations</h2>
+            <h2 className="section-title">Our Locations</h2>
             <p className="text-lg text-gray-400">We operate in multiple cities for your convenience.</p>
           </motion.div>
 

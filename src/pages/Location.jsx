@@ -1010,7 +1010,7 @@ function Location() {
                   whileHover={{ y: -8 }}
                   className="card-glass overflow-hidden group"
                 >
-                  <Link to={`/companion/${escort.id}`} aria-label={`View profile of ${escort.name}, ${escort.age} year old escort in ${escort.location}`}>
+                  <Link to={`/escorts/${escort.name.toLowerCase().replace(/\s+/g, '-')}-${escort.id}`} aria-label={`View profile of ${escort.name}, ${escort.age} year old escort in ${escort.location}`}>
                     <div className="relative aspect-[3/4] overflow-hidden">
                       <img
                         src={escort.image}
