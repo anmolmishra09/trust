@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllProfiles } from '../services/profileService'
+import { getAllEscorts, getEscortById } from '../services/escortData'
 
 function CompanionProfile() {
   const { id } = useParams()
@@ -37,181 +38,82 @@ function CompanionProfile() {
   useEffect(() => {
     const loadAllEscorts = () => {
       setIsLoading(true)
+      
+      // Get all escorts from shared service (populated by Companions.jsx)
+      const sharedEscorts = getAllEscorts()
+      
       // Get advertiser profiles
       const advertiserProfiles = getAllProfiles()
       
-      // Complete companion database (default hardcoded data)
-      const escortsData = [
-    {
-      id: 1,
-      name: 'Sakshi',
-      age: 24,
-      location: 'Mumbai',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop',
-      ],
-      description: 'Elegant and sophisticated Mumbai beauty',
-      height: '5\'7"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Hindi', 'Marathi'],
-      services: ['Dinner & Wine', 'Cultural Events', 'Shopping Companion', 'Travel Companion', 'Corporate Events', 'Private Dates'],
-      rates: { hourly: '₹5000', halfDay: '₹15000', fullDay: '₹25000', overnight: '₹30000' },
-      rating: 4.9, reviews: 127, verified: true, responseTime: '< 30 min', availability: 'Available',
+      // Combine advertiser profiles with shared escorts
+      const combined = [...advertiserProfiles, ...sharedEscorts]
+      setAllEscortsData(combined)
+      setIsLoading(false)
+    }
+    
+    loadAllEscorts()
+    
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      console.log('Profiles updated, reloading companion profiles')
+      loadAllEscorts()
+    }
+    
+    window.addEventListener('profilesUpdated', handleProfileUpdate)
+    
+    return () => {
+      window.removeEventListener('profilesUpdated', handleProfileUpdate)
+    }
+  }, [])
+
+  // Find companion by ID
+  const companion = allEscortsData.find(c => c.id === parseInt(id) || c.id === id)
+  
+  // If companion not found, show error
+  if (!isLoading && !companion) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-4xl font-serif font-bold text-gold mb-4">Profile Not Found</h1>
+          <p className="text-gray-400 mb-8">Sorry, the profile you're looking for doesn't exist.</p>
+          <Link to="/escorts" className="btn-gold">
+            Back to Escorts
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Show loading state
+  if (isLoading || !companion) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
     },
-    {
-      id: 2,
-      name: 'Ishita',
-      age: 26,
-      location: 'Delhi',
-      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1580489944761-b0a1cd18e4be?w=600&h=600&fit=crop',
-      ],
-      description: 'Charming and witty Delhi beauty with grace',
-      height: '5\'6"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Hindi', 'Punjabi'],
-      services: ['Dinner & Wine', 'Nightlife', 'Cultural Events', 'Travel', 'Corporate Events'],
-      rates: { hourly: '₹4500', halfDay: '₹14000', fullDay: '₹24000', overnight: '₹29000' },
-      rating: 5.0, reviews: 142, verified: true, responseTime: '< 15 min', availability: 'Available',
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
     },
-    {
-      id: 3,
-      name: 'Krina',
-      age: 25,
-      location: 'Bangalore',
-      image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1502323777036-f29e3972d82f?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?w=600&h=600&fit=crop',
-      ],
-      description: 'Graceful and alluring Bangalore princess',
-      height: '5\'8"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Kannada', 'Tamil'],
-      services: ['Events', 'Travel', 'Escortship', 'Dinner & Wine'],
-      rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' },
-      rating: 4.8, reviews: 112, verified: true, responseTime: '< 45 min', availability: 'Available Today',
-    },
-    {
-      id: 4,
-      name: 'Ananya',
-      age: 23,
-      location: 'Hyderabad',
-      image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1520293591298-1b434c919eba?w=600&h=600&fit=crop',
-      ],
-      description: 'Adventurous and playful Hyderabad beauty',
-      height: '5\'5"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Telugu', 'Urdu'],
-      services: ['Dinner & Wine', 'Nightlife', 'Travel', 'Events'],
-      rates: { hourly: '₹4200', halfDay: '₹13000', fullDay: '₹23000', overnight: '₹28000' },
-      rating: 4.7, reviews: 84, verified: true, responseTime: '< 1 hour', availability: 'Available',
-    },
-    {
-      id: 5,
-      name: 'Nikita',
-      age: 28,
-      location: 'Pune',
-      image: 'https://images.unsplash.com/photo-1634749721469-c7cfcf108790?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      gallery: [
-        'https://images.unsplash.com/photo-1634749721469-c7cfcf108790?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1598913869652-074abf85df67?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDV8fHxlbnwwfHx8fHw%3D',
-        'https://images.unsplash.com/photo-1581985188326-264f0c1733ef?q=80&w=985&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      ],
-      description: 'Sophisticated Pune beauty with refined elegance',
-      height: '5\'7"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Hindi', 'Marathi'],
-      services: ['Corporate Events', 'Dinner & Wine', 'Travel', 'Shopping'],
-      rates: { hourly: '₹5200', halfDay: '₹15500', fullDay: '₹25500', overnight: '₹31000' },
-      rating: 4.95, reviews: 156, verified: true, responseTime: '< 20 min', availability: 'Available',
-    },
-    {
-      id: 6,
-      name: 'Omisha',
-      age: 22,
-      location: 'Goa',
-      image: 'https://images.unsplash.com/photo-1515191107209-c28698631303?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1542178243-bc20204b769f?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?w=600&h=600&fit=crop',
-      ],
-      description: 'Vibrant and energetic Goa beach beauty',
-      height: '5\'6"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Konkani', 'Hindi'],
-      services: ['Nightlife', 'Events', 'Entertainment', 'Travel'],
-      rates: { hourly: '₹4000', halfDay: '₹12000', fullDay: '₹22000', overnight: '₹27000' },
-      rating: 4.6, reviews: 76, verified: true, responseTime: '< 55 min', availability: 'Available Tomorrow',
-    },
-    {
-      id: 7,
-      name: 'Priya',
-      age: 24,
-      location: 'Mumbai',
-      image: 'https://plus.unsplash.com/premium_photo-1705018501151-4045c97658a3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      gallery: [
-        'https://images.unsplash.com/photo-1504439904031-93ded9f93e4e?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1520341280432-4749d4d7bcf9?w=600&h=600&fit=crop',
-      ],
-      description: 'Charming Mumbai beauty with warm personality',
-      height: '5\'7"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Hindi', 'Marathi'],
-      services: ['Dinner & Wine', 'Travel', 'Shopping', 'Events'],
-      rates: { hourly: '₹4800', halfDay: '₹14500', fullDay: '₹24500', overnight: '₹29500' },
-      rating: 4.85, reviews: 134, verified: true, responseTime: '< 25 min', availability: 'Available',
-    },
-    {
-      id: 8,
-      name: 'Anjali',
-      age: 26,
-      location: 'Delhi',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=900&h=900&fit=crop',
-      gallery: [
-        'https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1503185912284-5271ff81b9a8?w=600&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&h=600&fit=crop',
-      ],
-      description: 'Elegant and mysterious Delhi enchantress',
-      height: '5\'8"',
-      ethnicity: 'Indian',
-      eyes: 'Brown',
-      hair: 'Black',
-      languages: ['English', 'Hindi', 'Punjabi'],
-      services: ['Events', 'Nightlife', 'Escortship', 'Dinner & Wine'],
-      rates: { hourly: '₹5000', halfDay: '₹15000', fullDay: '₹25000', overnight: '₹30000' },
-      rating: 4.92, reviews: 145, verified: true, responseTime: '< 20 min', availability: 'Available',
-    },
-    {
-      id: 9,
+  }
+
+  return (
       name: 'Neha',
       age: 23,
       location: 'Bangalore',
@@ -1238,16 +1140,7 @@ function CompanionProfile() {
         'https://images.unsplash.com/photo-1616530940355-351fabd9524b?w=600&h=600&fit=crop',
         'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=600&fit=crop',
       ], description: 'Mature Mumbai corporate lawyer', height: '5\'7"', ethnicity: 'Indian', eyes: 'Brown', hair: 'Black', languages: ['English', 'Hindi', 'Marathi'], services: ['Corporate Events', 'Dinner', 'Travel'], rates: { hourly: '₹5000', halfDay: '₹15100', fullDay: '₹25400', overnight: '₹30400' }, rating: 4.94, reviews: 172, verified: true, responseTime: '< 18 min', availability: 'Available' },
-  ]
       
-      // Combine advertiser profiles with default escorts
-      const combined = [...advertiserProfiles, ...escortsData]
-      setAllEscortsData(combined)
-      setIsLoading(false)
-    }
-    
-    loadAllEscorts()
-    
     // Listen for profile updates
     const handleProfileUpdate = () => {
       console.log('Profiles updated, reloading companion profiles')

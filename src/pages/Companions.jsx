@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllProfiles } from '../services/profileService'
+import { setAllEscorts as setGlobalEscorts } from '../services/escortData'
 
 function Escorts() {
   const [searchParams] = useSearchParams()
@@ -1096,6 +1097,7 @@ function Escorts() {
       // Combine advertiser profiles with default escorts
       const combined = [...advertiserProfiles, ...defaultEscorts]
       setAllEscorts(combined)
+      setGlobalEscorts(combined) // Share data with CompanionProfile
     }
     
     loadAllEscorts()
