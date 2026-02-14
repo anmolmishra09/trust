@@ -153,30 +153,27 @@ export const testEmailJS = async () => {
   }
 }
 
-// Debug function to check stored codes
-export const debugVerificationCodes = () => {
-  const codes = JSON.parse(localStorage.getItem(VERIFICATION_CODES_KEY) || '{}')
-  console.log('Stored verification codes:', codes)
-  
-  const now = Date.now()
-  Object.entries(codes).forEach(([email, data]) => {
-    const expired = now - data.timestamp > data.expiresIn
-    console.log(`Email: ${email}, Code: ${data.code}, Expired: ${expired}`)
-  })
-  
-  return codes
-}
-
-// Manual verification function for debugging
-export const manualVerify = (email, code) => {
-  console.log(`Manual verification for ${email} with code ${code}`)
-  return verifyCode(email, code)
+// Setup helper for EmailJS configuration
+export const setupEmailJS = () => {
+  console.log('🚀 EmailJS Setup Helper')
+  console.log('=======================')
+  console.log('')
+  console.log('1. Go to https://www.emailjs.com/')
+  console.log('2. Create a free account')
+  console.log('3. Add an email service (Gmail, Outlook, etc.)')
+  console.log('4. Create an email template with these variables:')
+  console.log('   - {{to_name}}')
+  console.log('   - {{verification_code}}')
+  console.log('   - {{from_name}}')
+  console.log('5. Get your Service ID, Template ID, and Public Key')
+  console.log('6. Update EMAIL_SERVICE_CONFIG in this file')
+  console.log('7. Run testEmailJS() in browser console')
+  console.log('')
+  console.log('📖 See EMAILJS_SETUP.md for detailed instructions')
 }
 
 // Make setup helper available globally
 if (typeof window !== 'undefined') {
   window.setupEmailJS = setupEmailJS
   window.testEmailJS = testEmailJS
-  window.debugVerificationCodes = debugVerificationCodes
-  window.manualVerify = manualVerify
 }
