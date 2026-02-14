@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - AI Call Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AI Call Hub</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="contact-section">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p class="subtitle">Make an AI call directly from our contact form</p>
+                
+                <div class="contact-form-container">
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Caller's Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="Your name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Recipient's Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">AI Message *</label>
+                            <textarea id="message" name="message" required placeholder="What would you like the AI to say?" rows="5"></textarea>
+                        </div>
+
+                        <div class="call-info">
+                            <p class="info-text">📞 When you click the call button below, our AI assistant will call the recipient's phone number and deliver your message.</p>
+                        </div>
+
+                        <button type="submit" class="call-button" id="submitBtn">
+                            📞 Make AI Call
+                        </button>
+                    </form>
+
+                    <div id="callStatus" class="call-status hidden">
+                        <div class="status-content">
+                            <h3 id="statusTitle"></h3>
+                            <p id="statusMessage"></p>
+                            <div id="statusDetails" class="status-details"></div>
+                            <button class="close-status-btn" onclick="closeStatus()">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info">
+                    <h2>Other Ways to Reach Us</h2>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>📞 Phone</h3>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>📧 Email</h3>
+                            <p>support@aicall.com</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>📍 Address</h3>
+                            <p>123 Tech Street, San Francisco, CA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AI Call Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="contact.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Call Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AI Call Hub</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Welcome to AI Call Website</h1>
+                <p>Experience seamless AI-powered calling technology</p>
+                <div class="button-group">
+                    <a href="/contact" class="cta-button">Contact Us</a>
+                    <button class="cta-button secondary" onclick="openQuickCall()">📞 Make Direct Call</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2>Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🤖 AI Powered</h3>
+                        <p>Advanced AI technology powers every call for a natural conversation experience.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📱 Easy to Use</h3>
+                        <p>Simple interface makes it easy to initiate calls with just one click.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⚡ Fast & Reliable</h3>
+                        <p>Experience lightning-fast call connections with 99.9% uptime reliability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AI Call Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Quick Call Modal -->
+    <div id="quickCallModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeQuickCall()">&times;</span>
+            <h2>📞 Make a Direct AI Call</h2>
+            <form id="quickCallForm" onsubmit="handleQuickCall(event)">
+                <div class="form-group">
+                    <label for="quickPhone">Recipient's Phone Number *</label>
+                    <input type="tel" id="quickPhone" required placeholder="+1 (555) 123-4567">
+                </div>
+
+                <div class="form-group">
+                    <label for="quickMessage">Message to Say *</label>
+                    <textarea id="quickMessage" required placeholder="What would you like the AI to say?" rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="call-button">📞 Call Now</button>
+            </form>
+
+            <div id="quickCallStatus" class="call-status hidden"></div>
+        </div>
+    </div>
+
+    <script src="quick-call.js"></script>
+</body>
+</html>
