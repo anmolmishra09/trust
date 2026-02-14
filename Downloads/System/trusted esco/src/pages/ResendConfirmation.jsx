@@ -145,6 +145,9 @@ function ResendConfirmation() {
                       <strong className="text-gold">Note:</strong> Please check your inbox and spam folder. 
                       The confirmation link will expire in 24 hours.
                     </p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      <strong className="text-gold">Demo Mode:</strong> If emails aren't working, check the browser console (F12) for the verification code.
+                    </p>
                   </div>
                   <div className="space-y-3">
                     <Link
